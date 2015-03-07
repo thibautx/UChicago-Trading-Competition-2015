@@ -1,0 +1,13 @@
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?> <jnlp spec="1.5+" codebase="http://64.74.102.112:10400/optionscity2/optionscity/onramp">	<information>		<title>OnRamp</title>		<vendor>OptionsCity Software Inc.</vendor>		<homepage href="http://64.74.102.112:10400/optionscity2/optionscity" />		<description>OnRamp Freeway Client</description>		<icon href="onramp.jpg"/>		<icon kind="splash" href="onramp.png"/>		<icon kind="shortcut" href="onramp.png"/>	</information>	<security>		<all-permissions/>	</security>	<resources>		<j2se version="1.7+" />		<jar href="onramp.jar" />	</resources>	<application-desc main-class="com.optionscity.freeway.onramp.OnRampMain">                <argument>64.74.102.112</argument>                <argument>20404</argument>                <argument>false</argument>    </application-desc></jnlp>
+
+
+
