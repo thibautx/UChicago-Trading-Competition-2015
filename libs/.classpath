@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="freeway-6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="commons-math3-3.4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="options.jar"/>
+	<classpathentry exported="true" kind="lib" path="index.jar"/>
+	<classpathentry exported="true" kind="lib" path="pairs.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
