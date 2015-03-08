@@ -1,6 +1,9 @@
 package ill1;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.solvers.BrentSolver;
@@ -22,51 +25,74 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
     double currentBid = OptionsMathUtils.theoValue(100, 0.3)-1;
     double currentAsk = OptionsMathUtils.theoValue(100, 0.3)+1;
 
+    final double volSD = 0.05;
+    final double initialVol = 0.3;
+
     final double r = 0.01;
     final double t = 1.0;
     final double s = 100.0;
 
-    double lastVol = 0.3;
+    final int strikes[] = {80, 90, 100, 110, 120};
 
-    final double strikes[] = {80, 90, 100, 110, 120};
-    final int C80 = 0, C90 = 1, C100 = 2, C110 = 3, C120 = 4;  //TODO - use map to index instead
+    HashMap<Integer, Integer> positions = new HashMap<Integer, Integer>();
 
-    double[] lastPrices = new double[10];
+    EMA impliedVolEMA;
 
+    /* parameters */
+    double alpha, xi;
 
     @Override
     public void addVariables(IJobSetup setup) {
-        setup.addVariable("Strategy", "Strategy to use", "string", "one");
+        setup.addVariable("Alpha", "Aggressiveness: Number of standard deviations in vega to buffer quote against", "double", "1");
+        setup.addVariable("Xi", "Sensitivity to vega risk", "double", "1");
+        setup.addVariable("EMA Decay", "Decay factor of the IV series EMA", "double", "0.5");
     }
 
     @Override
     public void initializeAlgo(IDB dataBase, List<String> instruments) {
-        // TODO Auto-generated method stub
-        // blah
-        String strategy = getStringVar("Strategy");
-        if (strategy.contains("one")) {
-            // do strategy one
+
+        /* retrieve parameters */
+        alpha = getDoubleVar("Alpha");
+        xi = getDoubleVar("Xi");
+        impliedVolEMA = new EMA(getDoubleVar("EMA Decay"));
+
+        /* add initial vol to EMA */
+        impliedVolEMA.average(initialVol);
+
+        /* initialize position map */
+        for(int strike : strikes){
+            positions.put(strike, 0);
         }
     }
 
     @Override
     public void newFill(int strike, int side, double price) {
-        // TODO Auto-generated method stub
-        log("My logic received a quote Fill, price=" + price + ", strike=" + strike + ", direction=" + side);
-        int index = (int)((strike / 10.0) - 8);
-        double factor = (side == 1) ? (1/0.95) : (1/1.05);  //TODO - factor should be our pricing factor, not always 5%
-        lastPrices[index] = price * factor;
+        log("Quote Fill, price=" + price + ", strike=" + strike + ", direction=" + side);
+
+        /* update position */
+        positions.put(strike, positions.get(strike) + side);
+
+        /* estimate the true price by discounting the average edge our fills receive */
+        double truePrice = (side == 1) ? (price/0.95) : (price/1.05);
+
+        /* compute IV via Dekker-Brent method */
+        double lastVol = impliedVolatility(truePrice, strike);
+
+        /* add lastVol to IV EMA */
+        impliedVolEMA.average(lastVol);
     }
 
     @Override
     public QuoteList getCurrentQuotes(){
-        // TODO Auto-generated method stub
         log("My Case1 implementation received a request for current quotes");
-        Quote quoteEighty = new Quote(80, currentBid,currentAsk);
-        Quote quoteNinety = new Quote(90, currentBid,currentAsk);
-        Quote quoteHundred = new Quote(100, currentBid,currentAsk);
-        Quote quoteHundredTen = new Quote(110, currentBid,currentAsk);
-        Quote quoteHundredTwenty = new Quote(120, currentBid,currentAsk);
+
+        double totalVegaRisk = getTotalVegaRisk();
+
+        Quote quoteEighty = getQuote(80, totalVegaRisk);
+        Quote quoteNinety = getQuote(90, totalVegaRisk);
+        Quote quoteHundred = getQuote(100, totalVegaRisk);
+        Quote quoteHundredTen = getQuote(110, totalVegaRisk);
+        Quote quoteHundredTwenty = getQuote(120, totalVegaRisk);
 
         return new QuoteList(quoteEighty,quoteNinety,quoteHundred,quoteHundredTen,quoteHundredTwenty);
     }
@@ -74,44 +100,56 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
     @Override
     //TODO - update vol based on the fact that we know their order was higher/lower than our quote
     public void noBrokerFills() {
-        // TODO Auto-generated method stub
         log("No match against broker the broker orders...time to adjust some levers?");
     }
 
     @Override
     public void penaltyNotice(double amount) {
-        // TODO Auto-generated method stub
         log("Penalty received in the amount of " + amount);
     }
 
     @Override
     public OptionsInterface getImplementation() {
-        // TODO Auto-generated method stub
-        return null;
+        return this;
     }
 
     /* helper functions */
-    //TODO - maybe we should compute impliedVol as a weighted moving average, since we only get one hit per tick
-    private double getAverageVolatility(){
-        double sum = 0;
-        sum += impliedVolatility(lastPrices[C80], 80);
-        sum += impliedVolatility(lastPrices[C90], 90);
-        sum += impliedVolatility(lastPrices[C100], 100);
-        sum += impliedVolatility(lastPrices[C110], 110);
-        sum += impliedVolatility(lastPrices[C120], 120);
-        return sum / 5;
+    /* price option by price = theoPrice * (1 +/- delta + omega) */
+    private Quote getQuote(int strike, double totalVegaRisk){
+        double vol = impliedVolEMA.get();
+        double theoPrice = OptionsMathUtils.theoValue(strike, vol);
+        double vegaRisk = getVegaRisk(strike);
+        double delta = vegaRisk * volSD * alpha;
+        double omega = delta * totalVegaRisk * xi;
+        double bidPrice = theoPrice * (1 - delta + omega);
+        double askPrice = theoPrice * (1 + delta + omega);
+        return new Quote(strike, bidPrice, askPrice);
     }
 
-    private void updateLastPrices() {
+    private double getTotalVegaRisk() {
+        double totalVega = 0;
+        double vol = impliedVolEMA.get();
 
+        for(int strike : strikes){
+            double vega = OptionsMathUtils.calculateVega(strike, vol);
+            totalVega += vega*positions.get(strike);
+        }
+
+        return totalVega;
     }
 
+    private double getVegaRisk(int strike){
+        double vol = impliedVolEMA.get();
+        double vega = OptionsMathUtils.calculateVega(strike, vol);
+        return vega*positions.get(strike);
+    }
 
     public double impliedVolatility(double price, double strike) {
 
         BrentSolver solver = new BrentSolver();
         UnivariateFunction f = new ImpliedVolFunction(price, strike);
-        return solver.solve(10000, f, 0.0, 5.0, lastVol);
+        double start = impliedVolEMA.get();
+        return solver.solve(10000, f, 0.0, 5.0, start);
     }
 
     private static class ImpliedVolFunction implements UnivariateFunction {

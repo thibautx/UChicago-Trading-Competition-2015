@@ -69,7 +69,6 @@ public class OptionsCaseSample extends AbstractOptionsCase implements OptionsInt
 
 	@Override
 	public OptionsInterface getImplementation() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
