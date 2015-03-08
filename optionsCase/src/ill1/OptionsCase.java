@@ -22,9 +22,7 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
     private IDB myDatabase;
 
     // Note that this implementation uses price of 100 call for ALL options
-    double currentBid = OptionsMathUtils.theoValue(100, 0.3)-1;
-    double currentAsk = OptionsMathUtils.theoValue(100, 0.3)+1;
-
+    final double vegaLimit = 5 * OptionsMathUtils.theoValue(100, 0.3);
     final double volSD = 0.05;
     final double initialVol = 0.3;
 
