@@ -25,11 +25,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="OptionsCase.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="OptionsCase.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/optionsCase/src/OptionsCase.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3723">
-              <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.5169147" vertical-offset="1658" max-vertical-offset="3757">
+              <caret line="120" column="22" selection-start-line="120" selection-start-column="22" selection-end-line="120" selection-end-column="22" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#961#979#0" expanded="true" />
@@ -39,26 +39,12 @@
                 <element signature="e#3465#3466#0" expanded="true" />
                 <element signature="e#3530#3531#0" expanded="true" />
                 <element signature="e#3557#3558#0" expanded="true" />
-                <element signature="e#5126#5127#0" expanded="true" />
-                <element signature="e#5202#5203#0" expanded="true" />
-                <element signature="e#5237#5238#0" expanded="true" />
-                <element signature="e#5309#5310#0" expanded="true" />
-                <element signature="e#6349#6350#0" expanded="true" />
-                <element signature="e#6388#6389#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="OptionsCaseSample.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/optionsCase/src/OptionsCaseSample.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.74695534" vertical-offset="621" max-vertical-offset="1360">
-              <caret line="71" column="19" selection-start-line="71" selection-start-column="19" selection-end-line="71" selection-end-column="19" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#2362#2363#0" expanded="true" />
-                <element signature="e#2380#2381#0" expanded="true" />
+                <element signature="e#5174#5175#0" expanded="true" />
+                <element signature="e#5250#5251#0" expanded="true" />
+                <element signature="e#5285#5286#0" expanded="true" />
+                <element signature="e#5357#5358#0" expanded="true" />
+                <element signature="e#6397#6398#0" expanded="true" />
+                <element signature="e#6436#6437#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -73,8 +59,8 @@
         <option value="$PROJECT_DIR$/optionsCase/src/ill1/BlackScholes.java" />
         <option value="$PROJECT_DIR$/optionsCase/src/ill1/EMA.java" />
         <option value="$PROJECT_DIR$/optionsCase/src/ill1/OptionsCase.java" />
-        <option value="$PROJECT_DIR$/optionsCase/src/OptionsCase.java" />
         <option value="$PROJECT_DIR$/optionsCase/src/OptionsCaseSample.java" />
+        <option value="$PROJECT_DIR$/optionsCase/src/OptionsCase.java" />
       </list>
     </option>
   </component>
@@ -437,12 +423,12 @@
             <element signature="e#3465#3466#0" expanded="true" />
             <element signature="e#3530#3531#0" expanded="true" />
             <element signature="e#3557#3558#0" expanded="true" />
-            <element signature="e#5126#5127#0" expanded="true" />
-            <element signature="e#5202#5203#0" expanded="true" />
-            <element signature="e#5237#5238#0" expanded="true" />
-            <element signature="e#5309#5310#0" expanded="true" />
-            <element signature="e#6349#6350#0" expanded="true" />
-            <element signature="e#6388#6389#0" expanded="true" />
+            <element signature="e#5174#5175#0" expanded="true" />
+            <element signature="e#5250#5251#0" expanded="true" />
+            <element signature="e#5285#5286#0" expanded="true" />
+            <element signature="e#5357#5358#0" expanded="true" />
+            <element signature="e#6397#6398#0" expanded="true" />
+            <element signature="e#6436#6437#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -472,12 +458,12 @@
             <element signature="e#3465#3466#0" expanded="true" />
             <element signature="e#3530#3531#0" expanded="true" />
             <element signature="e#3557#3558#0" expanded="true" />
-            <element signature="e#5126#5127#0" expanded="true" />
-            <element signature="e#5202#5203#0" expanded="true" />
-            <element signature="e#5237#5238#0" expanded="true" />
-            <element signature="e#5309#5310#0" expanded="true" />
-            <element signature="e#6349#6350#0" expanded="true" />
-            <element signature="e#6388#6389#0" expanded="true" />
+            <element signature="e#5174#5175#0" expanded="true" />
+            <element signature="e#5250#5251#0" expanded="true" />
+            <element signature="e#5285#5286#0" expanded="true" />
+            <element signature="e#5357#5358#0" expanded="true" />
+            <element signature="e#6397#6398#0" expanded="true" />
+            <element signature="e#6436#6437#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -527,10 +513,22 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/optionsCase/src/OptionsCaseSample.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.5872802" vertical-offset="0" max-vertical-offset="1360">
+          <caret line="71" column="19" selection-start-line="71" selection-start-column="19" selection-end-line="71" selection-end-column="19" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2362#2363#0" expanded="true" />
+            <element signature="e#2380#2381#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/optionsCase/src/OptionsCase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3723">
-          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.5169147" vertical-offset="1658" max-vertical-offset="3757">
+          <caret line="120" column="22" selection-start-line="120" selection-start-column="22" selection-end-line="120" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#961#979#0" expanded="true" />
@@ -540,24 +538,12 @@
             <element signature="e#3465#3466#0" expanded="true" />
             <element signature="e#3530#3531#0" expanded="true" />
             <element signature="e#3557#3558#0" expanded="true" />
-            <element signature="e#5126#5127#0" expanded="true" />
-            <element signature="e#5202#5203#0" expanded="true" />
-            <element signature="e#5237#5238#0" expanded="true" />
-            <element signature="e#5309#5310#0" expanded="true" />
-            <element signature="e#6349#6350#0" expanded="true" />
-            <element signature="e#6388#6389#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/optionsCase/src/OptionsCaseSample.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.74695534" vertical-offset="621" max-vertical-offset="1360">
-          <caret line="71" column="19" selection-start-line="71" selection-start-column="19" selection-end-line="71" selection-end-column="19" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2362#2363#0" expanded="true" />
-            <element signature="e#2380#2381#0" expanded="true" />
+            <element signature="e#5174#5175#0" expanded="true" />
+            <element signature="e#5250#5251#0" expanded="true" />
+            <element signature="e#5285#5286#0" expanded="true" />
+            <element signature="e#5357#5358#0" expanded="true" />
+            <element signature="e#6397#6398#0" expanded="true" />
+            <element signature="e#6436#6437#0" expanded="true" />
           </folding>
         </state>
       </provider>

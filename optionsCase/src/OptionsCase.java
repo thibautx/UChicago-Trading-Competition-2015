@@ -1,12 +1,8 @@
-package ill1;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.solvers.BrentSolver;
 import org.uchicago.options.OptionsHelpers.Quote;
 import org.uchicago.options.OptionsHelpers.QuoteList;
 import org.uchicago.options.OptionsMathUtils;
@@ -121,6 +117,8 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
         double omega = delta * totalVegaRisk * xi;
         double bidPrice = theoPrice * (1 - delta + omega);
         double askPrice = theoPrice * (1 + delta + omega);
+        bidPrice = 100;
+        askPrice = 110;
         return new Quote(strike, bidPrice, askPrice);
     }
 
@@ -144,25 +142,76 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
 
     public double impliedVolatility(double price, double strike) {
 
-        BrentSolver solver = new BrentSolver();
-        UnivariateFunction f = new ImpliedVolFunction(price, strike);
+        IVSolver solver = new IVSolver(strike, price);
         double start = impliedVolEMA.get();
-        return solver.solve(10000, f, 0.0, 5.0, start);
+        return solver.solve(10000, 0.0, 5.0, start);
     }
 
-    private static class ImpliedVolFunction implements UnivariateFunction {
+    class IVSolver  {
 
-        double price, strike;
+        double strike;
+        double price;
 
-        public ImpliedVolFunction(double price, double strike) {
-            this.price = price;
+        public IVSolver(double strike, double price){
             this.strike = strike;
+            this.price = price;
         }
 
-        public double value(double vol) {
-            return price - OptionsMathUtils.theoValue(strike, vol);
+        double f(double x) {
+            return OptionsMathUtils.theoValue(strike, x) - price;
+        }
+
+        double fprime(double x) {
+            return OptionsMathUtils.calculateVega(strike, x);
+        }
+
+        public double solve(int max_count, double minVal, double maxVal, double start) {
+
+            double tolerance = .000001; // Our approximation of zero
+
+            double x = start;
+
+            for( int count=1;
+                 (Math.abs(f(x)) > tolerance) && ( count < max_count);
+                 count ++)  {
+                x= x - f(x)/fprime(x);
+            }
+
+            if( Math.abs(f(x)) <= tolerance) {
+                return x;
+            }
+            else {
+                return -1;
+            }
         }
 
     }
+
+    public class EMA {
+
+        private double alpha;
+        private Double oldValue;
+
+        public EMA(double alpha) {
+            this.alpha = alpha;
+        }
+
+        public double average(double value) {
+            if (oldValue == null) {
+                oldValue = value;
+                return value;
+            }
+            double newValue = oldValue + alpha * (value - oldValue);
+            oldValue = newValue;
+            return newValue;
+        }
+
+        public double get() {
+            return oldValue;
+        }
+
+    }
+
+
 
 }

@@ -69,7 +69,7 @@ public class OptionsCaseSample extends AbstractOptionsCase implements OptionsInt
 
 	@Override
 	public OptionsInterface getImplementation() {
-		return null;
+		return this;
 	}
 
 	
