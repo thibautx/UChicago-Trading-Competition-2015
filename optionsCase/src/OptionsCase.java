@@ -32,7 +32,11 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
     final double t = 1.0;
     final double s = 100.0;
 
+    final double beta = 50000;
+
     final int strikes[] = {80, 90, 100, 110, 120};
+
+    double spread = 0;
 
     double cash = 0;
 
@@ -45,8 +49,8 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
 
     @Override
     public void addVariables(IJobSetup setup) {
-        setup.addVariable("Alpha", "Passiveness: Number of standard deviations in vega to buffer quote against", "double", "1");
-        setup.addVariable("Xi", "Sensitivity to vega risk", "double", "5");
+        setup.addVariable("Alpha", "Passiveness: Number of standard deviations in vega to buffer quote against", "double", "1.0");
+        setup.addVariable("Xi", "Sensitivity to vega risk", "double", "1");
         setup.addVariable("EMA Decay", "Decay factor of the IV series EMA", "double", "0.5");
     }
 
@@ -69,13 +73,13 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
 
     @Override
     public void newFill(int strike, int side, double price) {
-        //log("Quote Fill, price=" + price + ", strike=" + strike + ", direction=" + side);
-
+        log("Quote Fill, price=" + price + ", strike=" + strike + ", direction=" + side);
+        spread = 0;
         /* update position */
         positions.put(strike, positions.get(strike) + side);
 
         /* estimate the true price by discounting the average edge our fills receive */
-        double truePrice = (side == -1) ? (price/0.95) : (price/1.05);
+        double truePrice = (side == 1) ? (price/0.95) : (price/1.05);
 
         /* compute IV via Dekker-Brent method */
         double lastVol = impliedVolatility(truePrice, strike);
@@ -85,10 +89,12 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
         /* add lastVol to IV EMA */
         impliedVolEMA.average(lastVol);
 
-        cash += side*price;
+        cash -= side*price;
 
-        log("Got filled, immediate (lst) loss is " + side*(price-OptionsMathUtils.theoValue(strike, lastVol)));
-        log("Got filled, immediate (avg) loss is " + side*(price-OptionsMathUtils.theoValue(strike, impliedVolEMA.get())));
+        impliedVolEMA.average(impliedVolEMA.get()+getTotalVegaRisk()/beta);
+
+        //log("Got filled, immediate gain is " + side*(truePrice - price));
+        //log("Got filled, immediate (avg) loss is " + side*(price-OptionsMathUtils.theoValue(strike, impliedVolEMA.get())));
     }
 
     @Override
@@ -101,16 +107,17 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
 
         double assets = 0;
 
-        log("--------------");
-        log("Cash = " + cash);
+        //log("--------------");
+        //log("Cash = " + cash);
         for(int strike : strikes){
-            log(Integer.toString(strike) + " qty = " + positions.get(strike));
-            assets += positions.get(strike) * OptionsMathUtils.theoValue(strike, impliedVolEMA.get());
+              //log(Integer.toString(strike) + " qty = " + positions.get(strike));
+              assets += positions.get(strike) * OptionsMathUtils.theoValue(strike, impliedVolEMA.get());
         }
-        log("IV = " + impliedVolEMA.get());
-        log("Vega = " + getTotalVegaRisk());
-        log("PnL = " + (cash + assets));
-        log("--------------");
+        //log("Assets = " + assets);
+        //log("IV = " + impliedVolEMA.get());
+        //log("Vega = " + getTotalVegaRisk() + " out of " + vegaLimit);
+        log("PnL = " + (cash + assets) + " ---- Vega = " + getTotalVegaRisk());
+        //log("--------------");
 
         Quote quoteEighty = getQuote(80, totalVegaRisk);
         Quote quoteNinety = getQuote(90, totalVegaRisk);
@@ -124,12 +131,14 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
     @Override
     //TODO - update vol based on the fact that we know their order was higher/lower than our quote
     public void noBrokerFills() {
-        log("No match against broker the broker orders...time to adjust some levers?");
+        //log("No match against broker the broker orders...time to adjust some levers?");
+        impliedVolEMA.average(impliedVolEMA.get()-getTotalVegaRisk()/beta);
+        spread -= 0.1;
     }
 
     @Override
     public void penaltyNotice(double amount) {
-        log("Penalty received in the amount of " + amount);
+        //log("Penalty received in the amount of " + amount);
     }
 
     @Override
@@ -142,11 +151,12 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
     private Quote getQuote(int strike, double totalVegaRisk){
         double vol = impliedVolEMA.get();
         double theoPrice = OptionsMathUtils.theoValue(strike, vol);
-        double vegaRisk = getVegaRisk(strike);
-        double delta = vegaRisk * volSD * alpha;
+        double vega = OptionsMathUtils.calculateVega(strike, vol);
+        //double delta = vega * volSD * alpha;
+        double delta = volSD * alpha;
         double omega = totalVegaRisk * xi;
-        double bidPrice = theoPrice * (1 - delta - Math.max(omega/5, omega));
-        double askPrice = theoPrice * (1 + delta - Math.min(omega/5, omega));
+        double bidPrice = theoPrice * (1 - delta - Math.max(0, omega)) - spread;
+        double askPrice = theoPrice * (1 + delta - Math.min(0, omega)) + spread;
         //log("Bid omega is " + -1*Math.max(omega/5, omega));
         //log("Ask omega is " + -1*Math.min(omega/5, omega));
         //log(Integer.toString(strike) + " quote is " + bidPrice + " - " + askPrice);
@@ -172,18 +182,10 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
     }
 
     public double impliedVolatility(double price, double strike) {
-
-        //IVSolver solver = new IVSolver(strike, price);
-        //double start = impliedVolEMA.get();
-        //return solver.solve(100000, 0.0, 5.0, start);
         BisectionSolver solver = new BisectionSolver();
         UnivariateDifferentiableFunction f = new ImpliedVolFunction(price, strike);
         double start = impliedVolEMA.get();
         return solver.solve(100000, f, 0.0, 5.0, start);
-        //NewtonRaphsonSolver solver = new NewtonRaphsonSolver();
-        //
-        //double start = impliedVolEMA.get();
-        //return solver.solve(100000, f, 0.0, 5.0, start);
     }
 
     class ImpliedVolFunction implements UnivariateDifferentiableFunction {
@@ -205,52 +207,6 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
         @Override
         public DerivativeStructure value(DerivativeStructure d) throws DimensionMismatchException {
             return new DerivativeStructure(1, 1, OptionsMathUtils.calculateVega(strike, price));
-        }
-
-    }
-
-    class IVSolver  {
-
-        double strike;
-        double price;
-
-        public IVSolver(double strike, double price){
-            this.strike = strike;
-            this.price = price;
-        }
-
-        double f(double x) {
-            return OptionsMathUtils.theoValue(strike, x) - price;
-        }
-
-        double fprime(double x) {
-            return OptionsMathUtils.calculateVega(strike, x);
-        }
-
-        public double solve(int max_count, double minVal, double maxVal, double start) {
-
-            double tolerance = 0.001; // Our approximation of zero
-
-            double x = start;
-
-            log("Found vol of " + x + " with error of " + f(x) + " at count 0" + " where fprime = " + fprime(x) + " and price = " + price + " and strike = " + strike);
-
-            for( int count=1;
-                 (Math.abs(f(x)) > tolerance) && ( count < max_count);
-                 count ++)  {
-                x = x - f(x)/fprime(x);
-                log("Found vol of " + x + " with error of " + f(x) + " at count " + count + " where fprime = " + fprime(x)  + " and price = " + price + " and strike = " + strike);
-            }
-
-            log("Found vol of " + x + " with error of " + f(x));
-
-            if( Math.abs(f(x)) <= tolerance) {
-                return x;
-            }
-            else {
-                log("Newton's method failed to converge");
-                return -1;
-            }
         }
 
     }
