@@ -7,13 +7,18 @@ import java.io.*;
  */
 public class Main {
 
+    static double alpha = 1.0;
+    static double xi = 1.0;
+    static double ema_decay = 0.05;
+    static double beta = 2;
+
     public static void main(String args[]) throws IOException {
 
         TestOptionsCase mycase = new TestOptionsCase();
 
-        mycase.initializeAlgo();
+        mycase.initializeAlgo(alpha, xi, ema_decay, beta);
 
-        File file = new File("C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\Sample Data\\Options Case\\case_data.csv");
+        File file = new File("C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\optionsCase\\python\\case_data.csv");
 
         BufferedReader br = new BufferedReader(new FileReader(file));
         br.readLine();

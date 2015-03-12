@@ -54,6 +54,7 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
         setup.addVariable("EMA Decay", "Decay factor of the IV series EMA", "double", "0.5");
     }
 
+
     @Override
     public void initializeAlgo(IDB dataBase, List<String> instruments) {
 
@@ -71,15 +72,17 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
         }
     }
 
+    /* side =  1 => we sold   */
+    /* side = -1 => we bought */
     @Override
     public void newFill(int strike, int side, double price) {
         log("Quote Fill, price=" + price + ", strike=" + strike + ", direction=" + side);
         spread = 0;
         /* update position */
-        positions.put(strike, positions.get(strike) + side);
+        positions.put(strike, positions.get(strike) - side);
 
         /* estimate the true price by discounting the average edge our fills receive */
-        double truePrice = (side == 1) ? (price/0.95) : (price/1.05);
+        double truePrice = (side == -1) ? (price/0.95) : (price/1.05);
 
         /* compute IV via Dekker-Brent method */
         double lastVol = impliedVolatility(truePrice, strike);
@@ -110,7 +113,7 @@ public class OptionsCase extends AbstractOptionsCase implements OptionsInterface
         //log("--------------");
         //log("Cash = " + cash);
         for(int strike : strikes){
-              //log(Integer.toString(strike) + " qty = " + positions.get(strike));
+              log(Integer.toString(strike) + " qty = " + positions.get(strike));
               assets += positions.get(strike) * OptionsMathUtils.theoValue(strike, impliedVolEMA.get());
         }
         //log("Assets = " + assets);
