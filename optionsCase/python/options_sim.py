@@ -29,7 +29,7 @@ edge = 0.05
 noise_vol = 0.05**2
 noise_mean = 1.0
 
-ticks = 100
+ticks = 400
 
 
 V = []

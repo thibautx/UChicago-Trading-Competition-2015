@@ -7,9 +7,9 @@ import java.io.*;
  */
 public class Main {
 
-    static double alpha = 1.2;
+    static double alpha = 1.0;
     static double xi = 1.0;
-    static double ema_decay = 0.05;
+    static double ema_decay = 0.1;
     static double beta = 1.0;
 
     public static void main(String args[]) throws IOException {

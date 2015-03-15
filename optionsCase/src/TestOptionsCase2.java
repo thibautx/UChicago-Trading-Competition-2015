@@ -16,7 +16,7 @@ import com.optionscity.freeway.api.IDB;
 import com.optionscity.freeway.api.IJobSetup;
 
 
-public class TestOptionsCase {
+public class TestOptionsCase2 {
 
     private IDB myDatabase;
 
@@ -31,6 +31,8 @@ public class TestOptionsCase {
 
     final int strikes[] = {80, 90, 100, 110, 120};
 
+    double lastVol = 0.3;
+
     double spread = 0;
 
     double cash = 0;
@@ -42,15 +44,14 @@ public class TestOptionsCase {
     /* parameters */
     double alpha, xi, beta;
 
-    double beta_decay_rate = 0.6;
+    double beta_decay_rate = 0.5;
     double min_beta = 0.05;
     double cur_beta;
 
     int miss_count_trigger = 0;
     int cur_miss_count = 0;
 
-    double d_vol_cap = 0.05;
-    double max_beta_d_vol = 0.15;
+    double d_vol_cap = 0.25;
 
     public void initializeAlgo(double alpha_, double xi_, double ema_decay_, double beta_) {
 
@@ -75,36 +76,19 @@ public class TestOptionsCase {
     public void newFill(int strike, int side, double price) {
         System.out.println("Quote Fill, price=" + price + ", strike=" + strike + ", direction=" + side);
         cur_miss_count = 0;
+        spread = 0;
         cur_beta = beta;
-
-        /* estimate the true price by discounting the average edge our fills receive */
-        double truePrice = (side == -1) ? (price/0.96) : (price/1.04);
-
-        /* compute IV via bisection method */
-        double lastVol = impliedVolatility(truePrice, strike);
-
-        double d_vol = lastVol - impliedVolEMA.get();
-
-        if(Math.abs(d_vol) > d_vol_cap){
-            lastVol = impliedVolEMA.get() + d_vol_cap*Math.signum(d_vol);
-        }
-
-        /* add lastVol to IV EMA */
-        impliedVolEMA.average(lastVol);
-        //impliedVolEMA.average(lastVol);
-        if(-1*side == Math.signum(getTotalVegaRisk())){
-            for(int x = 0; x < 2; x++) {
-                impliedVolEMA.average(lastVol);
-            }
-        }
 
         /* update position */
         positions.put(strike, positions.get(strike) - side);
 
-        cash += side*price;
+        /* estimate the true price by discounting the average edge our fills receive */
+        double truePrice = (side == -1) ? (price/0.95) : (price/1.05);
 
-        double vega = getTotalVegaRisk();
-        //impliedVolEMA.average(impliedVolEMA.get() + minAbs(vega * cur_beta, Math.signum(vega) * max_beta_d_vol));
+        /* compute IV via bisection method */
+        lastVol = impliedVolatility(truePrice, strike);
+
+        cash += side*price;
 
         //System.out.println("Vol = " + impliedVolEMA.get());
 
@@ -119,7 +103,7 @@ public class TestOptionsCase {
 
         System.out.println("PnL = " + getPnL());
         System.out.println("Vega = " +  + getTotalVegaRisk());
-        System.out.println("Vol = " + impliedVolEMA.get());
+        System.out.println("Vol = " + lastVol);
 
         Quote quoteEighty = getQuote(80, totalVegaRisk);
         Quote quoteNinety = getQuote(90, totalVegaRisk);
@@ -138,10 +122,12 @@ public class TestOptionsCase {
     public void noBrokerFills() {
         //System.out.println("No match against broker the broker orders...time to adjust some levers?");
         //if(cur_miss_count == miss_count_trigger) {
-            double vega = getTotalVegaRisk();
-            impliedVolEMA.average(impliedVolEMA.get() - minAbs(vega * cur_beta, Math.signum(vega) * max_beta_d_vol));
-            //cur_miss_count = 0;
-            cur_beta = Math.max(min_beta, cur_beta*beta_decay_rate);
+        System.out.println(spread);
+        double vega = getTotalVegaRisk();
+        spread += beta;
+        //impliedVolEMA.average(impliedVolEMA.get() - minAbs(vega * cur_beta, Math.signum(vega) * max_beta_d_vol));
+        //cur_miss_count = 0;
+        //cur_beta = Math.max(min_beta, cur_beta*beta_decay_rate);
         //} else {
         //    cur_miss_count++;
         //}
@@ -155,14 +141,13 @@ public class TestOptionsCase {
     /* helper functions */
     /* price option by price = theoPrice * (1 +/- delta + omega) */
     private Quote getQuote(int strike, double totalVegaRisk){
-        double vol = impliedVolEMA.get();
+        double vol = lastVol;
         double theoPrice = OptionsMathUtils.theoValue(strike, vol);
         double vega = OptionsMathUtils.calculateVega(strike, vol);
-        //double delta = vega * volSD * alpha;
         double delta = volSD * alpha;
         double omega = totalVegaRisk * xi;
-        double bidPrice = theoPrice * (1 - delta - Math.max(0.05, omega));// - spread;
-        double askPrice = theoPrice * (1 + delta - Math.min(0.05, omega));// + spread;
+        double bidPrice = theoPrice * (1 - delta - Math.max(0.05, omega)) + spread;
+        double askPrice = theoPrice * (1 + delta - Math.min(0.05, omega)) - spread;
         //System.out.println("Bid omega is " + -1*Math.max(omega/5, omega));
         //System.out.println("Ask omega is " + -1*Math.min(omega/5, omega));
         //System.out.println(Integer.toString(strike) + " quote is " + bidPrice + " - " + askPrice);
@@ -170,7 +155,7 @@ public class TestOptionsCase {
     }
 
     public double getPnL(){
-        return getPnL(impliedVolEMA.get());
+        return getPnL(lastVol);
     }
 
     public double getPnL(double vol){
@@ -186,7 +171,7 @@ public class TestOptionsCase {
     }
 
     private double getTotalVegaRisk() {
-        double vol = impliedVolEMA.get();
+        double vol = lastVol;
         return getTotalVegaRisk(vol);
     }
 
@@ -202,7 +187,7 @@ public class TestOptionsCase {
     }
 
     private double getVegaRisk(int strike){
-        double vol = impliedVolEMA.get();
+        double vol = lastVol;
         double vega = OptionsMathUtils.calculateVega(strike, vol);
         return vega*positions.get(strike);
     }
@@ -210,7 +195,7 @@ public class TestOptionsCase {
     public double impliedVolatility(double price, double strike) {
         BisectionSolver solver = new BisectionSolver();
         UnivariateDifferentiableFunction f = new ImpliedVolFunction(price, strike);
-        double start = impliedVolEMA.get();
+        double start = lastVol;
         return solver.solve(100000, f, 0.0, 5.0, start);
     }
 
