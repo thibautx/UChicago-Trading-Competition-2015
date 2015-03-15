@@ -6,6 +6,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="esol-trendmining" />
     <orderEntry type="module" module-name="MyPortfolio" />
+    <orderEntry type="module" module-name="python" />
   </component>
 </module>
 
