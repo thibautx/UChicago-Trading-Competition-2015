@@ -1,0 +1,134 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 90112 bytes for card table expansion
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   In 32 bit mode, the process size limit was hit
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Use 64 bit Java on a 64 bit OS
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_windows.cpp:3291), pid=126552, tid=127804
+#
+# JRE version:  (8.0_25-b18) (build )
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (25.25-b02 mixed mode windows-amd64 compressed oops)
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x000000000226e800):  JavaThread "Unknown thread" [_thread_in_vm, id=127804, stack(0x0000000002130000,0x0000000002230000)]
+
+Stack: [0x0000000002130000,0x0000000002230000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x31667a]
+V  [jvm.dll+0x267073]
+V  [jvm.dll+0x267cb3]
+V  [jvm.dll+0x25f5b5]
+V  [jvm.dll+0x283279]
+V  [jvm.dll+0x205247]
+V  [jvm.dll+0xc4964]
+V  [jvm.dll+0x3cfdca]
+V  [jvm.dll+0x3e403f]
+V  [jvm.dll+0x3ce02a]
+V  [jvm.dll+0x3d256d]
+V  [jvm.dll+0xe3986]
+V  [jvm.dll+0xe42d4]
+V  [jvm.dll+0x1f9aa7]
+V  [jvm.dll+0x22b2e4]
+V  [jvm.dll+0x14d571]
+C  [java.exe+0x20b6]
+C  [java.exe+0xc9bb]
+C  [java.exe+0xca4f]
+C  [KERNEL32.DLL+0x1842]
+C  [ntdll.dll+0x3f9d1]
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+
+Other Threads:
+
+=>0x000000000226e800 (exited) JavaThread "Unknown thread" [_thread_in_vm, id=127804, stack(0x0000000002130000,0x0000000002230000)]
+
+VM state:not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x000007f6a8830000 - 0x000007f6a8864000 	C:\Program Files\Java\jdk1.8.0_25\bin\java.exe
+0x000007fe3f230000 - 0x000007fe3f3ee000 	C:\windows\SYSTEM32\ntdll.dll
+0x000007fe3c8a0000 - 0x000007fe3c9d7000 	C:\windows\system32\KERNEL32.DLL
+0x000007fe3c2a0000 - 0x000007fe3c394000 	C:\windows\system32\KERNELBASE.dll
+0x000007fe3f150000 - 0x000007fe3f22e000 	C:\windows\system32\ADVAPI32.dll
+0x000007fe3c750000 - 0x000007fe3c89c000 	C:\windows\system32\USER32.dll
+0x000007fe39e20000 - 0x000007fe3a08a000 	C:\windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.9200.16579_none_418ab7ef718b27ef\COMCTL32.dll
+0x000007fe3d960000 - 0x000007fe3da05000 	C:\windows\system32\msvcrt.dll
+0x000007fe3c600000 - 0x000007fe3c648000 	C:\windows\SYSTEM32\sechost.dll
+0x000007fe3d690000 - 0x000007fe3d7d5000 	C:\windows\system32\RPCRT4.dll
+0x000007fe3cce0000 - 0x000007fe3ce21000 	C:\windows\system32\GDI32.dll
+0x000007fe3c700000 - 0x000007fe3c739000 	C:\windows\system32\IMM32.DLL
+0x000007fe3efe0000 - 0x000007fe3f0f6000 	C:\windows\system32\MSCTF.dll
+0x000000005b0d0000 - 0x000000005b1a2000 	C:\Program Files\Java\jdk1.8.0_25\jre\bin\msvcr100.dll
+0x0000000059e00000 - 0x000000005a65a000 	C:\Program Files\Java\jdk1.8.0_25\jre\bin\server\jvm.dll
+0x000007fe362e0000 - 0x000007fe362e9000 	C:\windows\SYSTEM32\WSOCK32.dll
+0x000007fe2d700000 - 0x000007fe2d720000 	C:\windows\SYSTEM32\WINMM.dll
+0x000007fe3c740000 - 0x000007fe3c747000 	C:\windows\system32\PSAPI.DLL
+0x000007fe3da10000 - 0x000007fe3da68000 	C:\windows\system32\WS2_32.dll
+0x000007fe2d840000 - 0x000007fe2d873000 	C:\windows\SYSTEM32\WINMMBASE.dll
+0x000007fe3da70000 - 0x000007fe3da79000 	C:\windows\system32\NSI.dll
+0x000007fe3c250000 - 0x000007fe3c29f000 	C:\windows\SYSTEM32\cfgmgr32.dll
+0x000007fe3c220000 - 0x000007fe3c242000 	C:\windows\system32\DEVOBJ.dll
+0x000000005b0c0000 - 0x000000005b0cf000 	C:\Program Files\Java\jdk1.8.0_25\jre\bin\verify.dll
+0x000000005b090000 - 0x000000005b0b8000 	C:\Program Files\Java\jdk1.8.0_25\jre\bin\java.dll
+0x000000005b070000 - 0x000000005b086000 	C:\Program Files\Java\jdk1.8.0_25\jre\bin\zip.dll
+0x000007fe25b20000 - 0x000007fe25c83000 	C:\windows\SYSTEM32\dbghelp.dll
+
+VM Arguments:
+jvm_args: -Didea.launcher.port=7537 -Didea.launcher.bin.path=C:\Program Files (x86)\JetBrains\IntelliJ IDEA Community Edition 14.0.1in -Dfile.encoding=UTF-8 
+java_command: com.intellij.rt.execution.application.AppMain Main
+java_class_path (initial): C:\Program Files\Java\jdk1.8.0_25\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\deploy.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\javaws.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\jce.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\jfr.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\jfxswt.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\management-agent.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\plugin.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\resources.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\rt.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\access-bridge-64.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\cldrdata.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\dnsns.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\jaccess.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\jfxrt.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\localedata.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\nashorn.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\sunec.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\sunjce_provider.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\sunmscapi.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\sunpkcs11.jar;C:\Program Files\Java\jdk1.8.0_25\jre\lib\ext\zipfs.jar;C:\Users\Greg Pastorek\Documents\FEC\uchicago-algo\optionsCase;C:\Users\Greg Pastorek\Documents\FEC\uchicago-algo\libs\commons-math3-3.4.1.jar;C:\Users\Greg Pastorek\Documents\FEC\uchicago-algo\libs\options.jar;C:\Users\Greg Pastorek\Documents\FEC\uchicago-algo\libs\index.jar;C:\Users\Greg Pastorek\Documents\FEC\uchicago-algo\libs\freeway-6.0.jar;C:\Users\Greg Pastorek\Documents\FEC\uchicago-algo\libs\pairs.jar;C:\Program Files (x86)\JetBrains\IntelliJ IDEA Community Edition 14.0.1\lib\idea_rt.jar
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=C:\Python27\lib\site-packages\numpy\core;C:\Ruby21\bin;C:\Tcl\bin;C:\Program Files (x86)\RSA SecurID Token Common;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files (x86)\Intel\OpenCL SDK\2.0\bin\x86;C:\Program Files (x86)\Intel\OpenCL SDK\2.0\bin\x64;C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET Web Pages\v1.0\;C:\Program Files (x86)\Windows Kits\8.0\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\blp\API;C:\Program Files\MATLAB\R2013a\runtime\win64;C:\Program Files\MATLAB\R2013a\bin;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\nodejs\;C:\Pro;C:\Program Files (x86)\MySQL\MySQL Utilities 1.3.6\;C:\Program Files\MiKTeX 2.9\miktex\bin\x64\;C:\Program Files\R\R-2.14.0\bin\i386;C:\Users\Greg Pastorek\AppData\Roaming\npm;C:\Program Files\R\R-2.14.0\bin\i386
+USERNAME=Greg Pastorek
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 58 Stepping 9, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 8 , 64 bit Build 9200 
+
+CPU:total 4 (2 cores per cpu, 2 threads per core) family 6 model 58 stepping 9, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, clmul, erms, ht, tsc, tscinvbit, tscinv
+
+Memory: 4k page, physical 8264980k(130580k free), swap 16442084k(146952k free)
+
+vm_info: Java HotSpot(TM) 64-Bit Server VM (25.25-b02) for windows-amd64 JRE (1.8.0_25-b18), built on Oct  7 2014 14:25:37 by "java_re" with MS VC++ 10.0 (VS2010)
+
+time: Sat Mar 14 23:15:07 2015
+elapsed time: 2 seconds (0d 0h 0m 2s)
+

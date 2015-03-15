@@ -7,7 +7,8 @@ import java.io.*;
  */
 public class Main {
 
-    static double alpha = 1.0;
+    final static boolean USE_REAL_VOL = false;
+    static double alpha = 1.3;
     static double xi = 1.0;
     static double ema_decay = 0.1;
     static double beta = 1.0;
@@ -27,6 +28,13 @@ public class Main {
         String line;
         while ((line = br.readLine()) != null) {
             String[] line_split = line.split(",");
+            String vol_line = vol_br.readLine();
+            double real_vol = Double.parseDouble(vol_line);
+            if(USE_REAL_VOL) {
+                for (int x = 0; x < 20; x++) {
+                    mycase.impliedVolEMA.average(real_vol);
+                }
+            }
             int direction = Integer.parseInt(line_split[0]);
             int strike = Integer.parseInt(line_split[1]);
             double price = Double.parseDouble(line_split[2]);
@@ -53,7 +61,7 @@ public class Main {
                 /* broker buys */
                 double ask = q.offer;
                 if(ask <= price){
-                    mycase.newFill(strike, -1*direction, ask);
+                    mycase.newFill(strike, -1 * direction, ask);
                     System.out.println("Fill diff = " + (price - ask));
                 } else {
                     mycase.noBrokerFills();
@@ -70,8 +78,6 @@ public class Main {
                     System.out.println("Fill diff = 0");
                 }
             }
-            String vol_line = vol_br.readLine();
-            double real_vol = Double.parseDouble(vol_line);
             double real_pnl = mycase.getPnL(real_vol);
             System.out.println("Real PnL = " + real_pnl);
             double real_vega = mycase.getTotalVegaRisk(real_vol);

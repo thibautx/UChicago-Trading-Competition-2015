@@ -37,12 +37,12 @@ public class TestOptionsCase {
 
     HashMap<Integer, Integer> positions = new HashMap<Integer, Integer>();
 
-    EMA impliedVolEMA;
+    public EMA impliedVolEMA;
 
     /* parameters */
     double alpha, xi, beta;
 
-    double beta_decay_rate = 0.6;
+    double beta_decay_rate = 0.5;
     double min_beta = 0.05;
     double cur_beta;
 
@@ -161,8 +161,8 @@ public class TestOptionsCase {
         //double delta = vega * volSD * alpha;
         double delta = volSD * alpha;
         double omega = totalVegaRisk * xi;
-        double bidPrice = theoPrice * (1 - delta - Math.max(0.05, omega));// - spread;
-        double askPrice = theoPrice * (1 + delta - Math.min(0.05, omega));// + spread;
+        double bidPrice = theoPrice * (1 - delta - Math.max(-0.02, omega));
+        double askPrice = theoPrice * (1 + delta - Math.min(0.02, omega));
         //System.out.println("Bid omega is " + -1*Math.max(omega/5, omega));
         //System.out.println("Ask omega is " + -1*Math.min(omega/5, omega));
         //System.out.println(Integer.toString(strike) + " quote is " + bidPrice + " - " + askPrice);
