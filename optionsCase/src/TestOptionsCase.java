@@ -42,12 +42,23 @@ public class TestOptionsCase {
     /* parameters */
     double alpha, xi, beta;
 
+    double beta_decay_rate = 0.5;
+    double min_beta = 0.05;
+    double cur_beta;
+
+    int miss_count_trigger = 0;
+    int cur_miss_count = 0;
+
+    double d_vol_cap = 0.02;
+    double max_beta_d_vol = 0.15;
+
     public void initializeAlgo(double alpha_, double xi_, double ema_decay_, double beta_) {
 
         /* retrieve parameters */
         alpha = alpha_;
         xi = xi_;
         beta = beta_;
+        cur_beta = beta;
         impliedVolEMA = new EMA(ema_decay_);
 
         /* add initial vol to EMA */
@@ -63,24 +74,29 @@ public class TestOptionsCase {
     /* side = -1 => we bought */
     public void newFill(int strike, int side, double price) {
         System.out.println("Quote Fill, price=" + price + ", strike=" + strike + ", direction=" + side);
-        //spread = 0;
+        cur_miss_count = 0;
+        cur_beta = beta;
+
         /* update position */
         positions.put(strike, positions.get(strike) - side);
 
         /* estimate the true price by discounting the average edge our fills receive */
         double truePrice = (side == -1) ? (price/0.95) : (price/1.05);
 
-        /* compute IV via Dekker-Brent method */
+        /* compute IV via bisection method */
         double lastVol = impliedVolatility(truePrice, strike);
 
-        //System.out.println("Compute lastVol = " + lastVol);
+        double d_vol = lastVol - impliedVolEMA.get();
+
+        if(Math.abs(d_vol) > d_vol_cap){
+            lastVol = impliedVolEMA.get() + d_vol_cap*Math.signum(d_vol);
+        }
 
         /* add lastVol to IV EMA */
         impliedVolEMA.average(lastVol);
+        impliedVolEMA.average(lastVol);
 
-        cash -= side*price;
-
-        impliedVolEMA.average(impliedVolEMA.get());
+        cash += side*price;
 
         //System.out.println("Vol = " + impliedVolEMA.get());
 
@@ -106,15 +122,26 @@ public class TestOptionsCase {
         return new QuoteList(quoteEighty,quoteNinety,quoteHundred,quoteHundredTen,quoteHundredTwenty);
     }
 
+    private double minAbs(double A, double B){
+        return Math.abs(A) < Math.abs(B) ? A : B;
+    }
+
     //TODO - update vol based on the fact that we know their order was higher/lower than our quote
     public void noBrokerFills() {
         //System.out.println("No match against broker the broker orders...time to adjust some levers?");
-        impliedVolEMA.average(impliedVolEMA.get() - getTotalVegaRisk() * beta);
+        //if(cur_miss_count == miss_count_trigger) {
+            double vega = getTotalVegaRisk();
+            impliedVolEMA.average(impliedVolEMA.get() - minAbs(vega * cur_beta, Math.signum(vega) * max_beta_d_vol));
+            //cur_miss_count = 0;
+            cur_beta = Math.max(min_beta, cur_beta*beta_decay_rate);
+        //} else {
+        //    cur_miss_count++;
+        //}
         //spread -= 0.1;
     }
 
     public void penaltyNotice(double amount) {
-        //System.out.println("Penalty received in the amount of " + amount);
+        System.out.println("Penalty received in the amount of " + amount);
     }
 
     /* helper functions */
@@ -135,11 +162,15 @@ public class TestOptionsCase {
     }
 
     public double getPnL(){
+        return getPnL(impliedVolEMA.get());
+    }
+
+    public double getPnL(double vol){
         double assets = 0;
 
         for(int strike : strikes){
             //System.out.println(Integer.toString(strike) + " qty = " + positions.get(strike));
-            assets += positions.get(strike) * OptionsMathUtils.theoValue(strike, impliedVolEMA.get());
+            assets += positions.get(strike) * OptionsMathUtils.theoValue(strike, vol);
         }
 
         return cash + assets;
@@ -147,8 +178,12 @@ public class TestOptionsCase {
     }
 
     private double getTotalVegaRisk() {
-        double totalVega = 0;
         double vol = impliedVolEMA.get();
+        return getTotalVegaRisk(vol);
+    }
+
+    public double getTotalVegaRisk(double vol) {
+        double totalVega = 0;
 
         for(int strike : strikes){
             double vega = OptionsMathUtils.calculateVega(strike, vol);

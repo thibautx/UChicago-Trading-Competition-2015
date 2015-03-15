@@ -19,7 +19,7 @@ t = 1
 S = 100
 
 v = 0.3
-v_vol = 0.05**2
+v_vol = 0.05
 v_drift = 0
 
 directions = np.array([-1, 1])
@@ -37,7 +37,7 @@ V = []
 for _ in xrange(0, ticks):
     direction = choice(directions)
     strike = choice(strikes)
-    v += norm.rvs(loc=v_drift, scale=np.sqrt(v_vol))
+    v += v_vol * v * norm.rvs()
     e = 1+edge if direction == -1 else 1-edge
     noise = norm.rvs(loc=noise_mean, scale=np.sqrt(noise_vol))
     price = callPrice(strike, S, t, r, v) * e * noise

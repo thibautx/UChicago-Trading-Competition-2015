@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/UChicago.iml" filepath="$PROJECT_DIR$/.idea/UChicago.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../../ESOL Trend Mining/esol-trendmining/.idea/esol-trendmining.iml" filepath="$PROJECT_DIR$/../../../../ESOL Trend Mining/esol-trendmining/.idea/esol-trendmining.iml" />
     </modules>
   </component>
 </project>
