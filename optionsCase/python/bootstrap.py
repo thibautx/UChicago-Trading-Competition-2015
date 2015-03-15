@@ -3,9 +3,11 @@ import subprocess
 from options_vol_analysis import analyze
 import numpy as np
 
+total_runs = 40
+
 pnl_series = []
 
-for _ in xrange(0, 20):
+for _ in xrange(0, total_runs):
 
     p = subprocess.Popen('C:\Python27\python.exe "C:/Users/Greg Pastorek/Documents/FEC/uchicago-algo/optionsCase/python/options_sim.py')
 
@@ -37,5 +39,9 @@ for _ in xrange(0, 20):
     pnl_series.append(pnl)
 
 avg_pnl = np.average(pnl_series)
+pnl_std = np.std(pnl_series)
+profitable_count = np.sum(map(lambda x: x > 0, pnl_series))
 
-print "Average PnL is {}".format(avg_pnl)
+print "PnL average is {}".format(avg_pnl)
+print "PnL STD is {}".format(pnl_std)
+print "Number of positive PnL runs was {} out of {}".format(profitable_count, total_runs)
