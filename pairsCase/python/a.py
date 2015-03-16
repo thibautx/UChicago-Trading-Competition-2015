@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-filepath = "C:\\Users\\Greg Pastorek\\Documents\\FEC\uchicago-algo\\pairsCase\\PairsRound1.csv"
+filepath = "C:\\Users\\Greg Pastorek\\Documents\\FEC\uchicago-algo\\pairsCase\\PairsRound2.csv"
 
-num_securities = 2
-securities = [[], []]
+num_securities = 3
+securities = [[], [], []]
 
 with open(filepath) as f:
     lines = f.readlines()
@@ -21,11 +21,15 @@ for i in xrange(0, num_securities):
     mean = np.average(d)
     print std, mean
 
-fig = plt.figure()
-ax = fig.add_subplot(2, 1, 1)
+#fig = plt.figure()
+#ax = fig.add_subplot(2, 1, 1)
+
+fig, axes = plt.subplots(nrows=2)
 
 for sec in securities:
-    ax.plot(sec)
+    axes[0].plot(sec)
+
+axes[1].plot(np.subtract(securities[0], securities[1]))
 
 plt.show()
 
