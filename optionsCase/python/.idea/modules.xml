@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../../../CS 242/MyPortfolio/.idea/MyPortfolio.iml" filepath="$PROJECT_DIR$/../../../../CS 242/MyPortfolio/.idea/MyPortfolio.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/UChicago.iml" filepath="$PROJECT_DIR$/.idea/UChicago.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../../../ESOL Trend Mining/esol-trendmining/.idea/esol-trendmining.iml" filepath="$PROJECT_DIR$/../../../../ESOL Trend Mining/esol-trendmining/.idea/esol-trendmining.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../pairsCase/python/.idea/python.iml" filepath="$PROJECT_DIR$/../../pairsCase/python/.idea/python.iml" />
     </modules>
   </component>
 </project>
