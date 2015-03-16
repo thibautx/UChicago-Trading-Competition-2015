@@ -15,7 +15,7 @@ number_of_pairs = 1
 
 # noise parameters for cointegrated pairs
 noise_drift = [0, 0, 0]
-noise_vol = [0.05, 0.05, 0.05]
+noise_vol = [0.02, 0.02, 0.02]
 
 # GMB parameters if security is not in a pair
 volatility = [0.02, 0.02, 0.02]
@@ -63,7 +63,7 @@ for _ in xrange(0, ticks):
     for i in rest:
         S[i] += dS(i)
         prices[i].append(S[i])
-    case_file.write("{}\n".format(",".join(map(str, S))))
+    case_file.write("{}\n".format(",".join(map(str, map(lambda x: round(x, 2), S)))))
 
 case_file.close()
 
