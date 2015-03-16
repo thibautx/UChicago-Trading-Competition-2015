@@ -101,7 +101,7 @@ if __name__ == "__main__":
     momentum = movingAverageDeriv(spread)
     mavgmomentum = movingaverage(momentum, 20)
     
-    
+    """
     '''Backtest'''
     holdings = [0.0, 0.0]
     weights = [1.0, -1.0]
@@ -157,20 +157,21 @@ if __name__ == "__main__":
 
         pnlarray.append(pnl) 
         print k, position
-
+    """
 
     '''Plot Stocks'''
-    fig, axes = plt.subplots(nrows=3)
+    #fig, axes = plt.subplots(nrows=3)
     #plt.plot(stock1, '-', stock2, '-', stock3, '-')
     '''Plot spread'''
-    axes[0].plot(spread, '-')
+    plt.plot(spread, '-')
+    #axes[0].plot(spread, '-')
     #plt.plot(y, '-')
     #plt.plot(z, '-')
     #plt.plot(x, '-')
     '''Indicators'''
-    axes[0].plot(slow_mavg, '-')
-    axes[0].plot(fast_mavg, '-')
-    axes[1].plot(mavgmomentum, '-')
+    #axes[0].plot(slow_mavg, '-')
+    #axes[0].plot(fast_mavg, '-')
+    #axes[1].plot(mavgmomentum, '-')
     '''PnL'''
-    axes[2].plot(pnlarray)
+    #axes[2].plot(pnlarray)
     plt.show()
