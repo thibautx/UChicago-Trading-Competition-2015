@@ -13,11 +13,7 @@ ticks = 1000
 number_of_securities = 3
 number_of_pairs = 1
 
-# noise parameters for cointegrated pairs
-noise_drift = [0, 0, 0]
-noise_vol = [0.02, 0.02, 0.02]
-
-# GMB parameters if security is not in a pair
+# GMB parameters if security is not in a pair, noise parameters if it is a pair
 volatility = [0.02, 0.02, 0.02]
 drift = [0, 0, 0]
 
@@ -25,7 +21,7 @@ drift = [0, 0, 0]
 gamma = [0.015]
 
 # cointegrating vectors
-alpha = [(1.0, -1.0)]
+alpha = [(1.0, -1.0), (1.0, -1.0)]
 
 # initial security values
 S = [100.0, 100.0, 100.0]
@@ -49,8 +45,8 @@ for _ in xrange(0, ticks):
         s1 = np.log(S[i1])
         s2 = np.log(S[i2])
         a = alpha[j]
-        s1_ = s1 - gamma[j]*(s1 + (a[1]/a[0])*s2) + norm.rvs(loc=noise_drift[i1], scale=noise_vol[i1])
-        s2_ = s2 - gamma[j]*(s2 + (a[0]/a[1])*s1) + norm.rvs(loc=noise_drift[i2], scale=noise_vol[i2])
+        s1_ = s1 - gamma[j]*(s1 + (a[1]/a[0])*s2) + norm.rvs(loc=drift[i1], scale=volatility[i1])
+        s2_ = s2 - gamma[j]*(s2 + (a[0]/a[1])*s1) + norm.rvs(loc=drift[i2], scale=volatility[i2])
         S[i1] = np.exp(s1_)
         S[i2] = np.exp(s2_)
         prices[i1].append(S[i1])

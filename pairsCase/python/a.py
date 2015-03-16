@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-filepath = "C:\\Users\\Greg Pastorek\\Documents\\FEC\uchicago-algo\\pairsCase\\PairsRound1.csv"
+filepath = "C:\\Users\\Greg Pastorek\\Documents\\FEC\uchicago-algo\\pairsCase\\PairsRound2.csv"
 
-num_securities = 2
-securities = [[], []]
+num_securities = 3
+securities = [[], [], []]
 
 with open(filepath) as f:
     lines = f.readlines()
