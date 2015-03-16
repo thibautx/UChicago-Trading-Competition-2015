@@ -209,12 +209,12 @@ public class TestOptionsCase {
 
     public double impliedVolatility(double price, double strike) {
         BisectionSolver solver = new BisectionSolver();
-        UnivariateDifferentiableFunction f = new ImpliedVolFunction(price, strike);
+        UnivariateFunction f = new ImpliedVolFunction(price, strike);
         double start = impliedVolEMA.get();
         return solver.solve(100000, f, 0.0, 5.0, start);
     }
 
-    class ImpliedVolFunction implements UnivariateDifferentiableFunction {
+    class ImpliedVolFunction implements UnivariateFunction {
 
         double strike;
         double price;
@@ -229,12 +229,6 @@ public class TestOptionsCase {
         public double value(double v) {
             return OptionsMathUtils.theoValue(strike, v) - price;
         }
-
-        @Override
-        public DerivativeStructure value(DerivativeStructure d) throws DimensionMismatchException {
-            return new DerivativeStructure(1, 1, OptionsMathUtils.calculateVega(strike, price));
-        }
-
     }
 
     public class EMA {

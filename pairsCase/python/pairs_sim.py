@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 
 case_file = open("case_data.csv", "w")
 
+
+'''START PARAMETERS'''
 ticks = 1000
 number_of_securities = 3
 number_of_pairs = 1
@@ -19,7 +21,7 @@ noise_vol = [0.05, 0.05, 0.05]
 volatility = [0.02, 0.02, 0.02]
 drift = [0, 0, 0]
 
-# cointegration gamma, controls how strong each pair is correlated
+# cointegration gamma, controls how strong each pair is correlated, should be between 0 and 1, recommend between 0.001 and 0.2
 gamma = [0.005]
 
 # cointegrating vectors
@@ -27,6 +29,8 @@ alpha = [(1.0, -1.0)]
 
 # initial security values
 S = [100.0, 100.0, 100.0]
+
+'''END PARAMETERS'''
 
 gamma_ = {}
 dW = {}
