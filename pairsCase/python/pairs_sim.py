@@ -32,7 +32,6 @@ S = [100.0, 100.0, 100.0]
 
 '''END PARAMETERS'''
 
-gamma_ = {}
 dW = {}
 
 prices = [[s] for s in S]
@@ -43,11 +42,7 @@ pairs_ = sample(np.arange(0, number_of_securities), 2*number_of_pairs)
 rest = list(set(np.arange(0, number_of_securities)) - set(pairs_))
 pairs = [(pairs_[2*i], pairs_[2*i+1]) for i in xrange(0, int(len(pairs_)/2))]
 
-for i, pair in enumerate(pairs):
-    gamma_[pair] = gamma[i]
-
 print "Correlated pairs are {}".format(pairs)
-
 
 for _ in xrange(0, ticks):
     for j, (i1, i2) in enumerate(pairs):
@@ -68,8 +63,6 @@ for _ in xrange(0, ticks):
 case_file.close()
 
 fig, axes = plt.subplots(nrows=2)
-#fig = plt.figure()
-#ax = fig.add_subplot(2, 1, 1)
 
 H = []
 L = []
