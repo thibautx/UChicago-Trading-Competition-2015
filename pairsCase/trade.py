@@ -214,7 +214,7 @@ if __name__ == "__main__":
     mavg_windows = [500, 50, 20] # [slow_mavg_window, fast_mavg_window, momentum_window]
     spread, mavgs = getData(data, mavg_windows)
     pnl, trades = backtest(spread, mavgs, thresholds, pnlarray)
-   # graph(spread, mavgs, trades, pnlarray)
+    #graph(spread, mavgs, trades, pnlarray)
     
 
 
