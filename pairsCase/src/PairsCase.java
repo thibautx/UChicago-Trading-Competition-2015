@@ -9,8 +9,6 @@ import org.uchicago.pairs.core.PairsInterface;
 import org.uchicago.pairs.PairsUtils;
 
 
-
-
 public class PairsCaseSample extends AbstractPairsCase implements PairsInterface {
 
     private IDB myDatabase;
@@ -73,6 +71,8 @@ public class PairsCaseSample extends AbstractPairsCase implements PairsInterface
 
     //helper function that implements a dummy strategy for round 1
     public Order[] roundOneStrategy (double priceHuron, double priceSuperior){
+        
+        /*
         if (Math.abs(priceHuron - priceSuperior)> 5) {
             if (priceHuron > priceSuperior) {
                 orders[0].quantity = -2;
@@ -96,6 +96,7 @@ public class PairsCaseSample extends AbstractPairsCase implements PairsInterface
             orders[1].quantity = 0;
         }
         return orders;
+        */
     }
     //helper function that implements a dummy strategy for round 2
     public Order[] roundTwoStrategy(double priceHuron, double priceSuperior, double priceMichigan) {
@@ -149,5 +150,20 @@ public class PairsCaseSample extends AbstractPairsCase implements PairsInterface
     @Override
     public PairsInterface getImplementation() {
         return null;
+    }
+
+    //@TODO: this is called when we need to make changes to position, executes trades
+    public void adjustPosition(){
+
+    }
+
+    //@TODO: find the correlated pairs
+    public void findCorrelatedPairs(){
+
+    }
+
+    // @TODO: takes the spread list and returns the current moving average for the lookback window
+    public int movingAverage(int window, ArrayList<integer> spread){
+
     }
 }

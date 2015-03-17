@@ -85,6 +85,7 @@ def backtest(spread, mavgs, thresholds, pnlarray):
     curr_spread = 0.0
     position = "cash"
     pnl = 0.0
+    pnl_prev = 0.0
     notional = 0.0
     momentum_threshold = 0.0
     n_profitable = 0
@@ -106,7 +107,6 @@ def backtest(spread, mavgs, thresholds, pnlarray):
                 position = "long"
                 longs[k] = entry_spread
                 print "tick", k, "cash -> long", curr_spread
-
         elif (position == "short"):
             #if (diff <= exit_threshold*std and mavg_momentum[k] >= momentum_threshold):
             #if (curr_spread-entry_spread > 2.0*stock_spread and diff <= exit_threshold*std and mavg_momentum[k] >= momentum_threshold):
@@ -127,7 +127,6 @@ def backtest(spread, mavgs, thresholds, pnlarray):
                 print "tick", k, "short -> cash loss", curr_spread
 
                 n_losses += 1
-        
         elif (position == "long"):
             #if (-diff <= exit_threshold*std and mavg_momentum[k] <= -momentum_threshold):
             #if (curr_spread-entry_spread > 2.0*stock_spread and diff >= exit_threshold*std and mavg_momentum[k] <= -momentum_threshold):
@@ -150,11 +149,10 @@ def backtest(spread, mavgs, thresholds, pnlarray):
 
         #print k, spread[k]
         if (k == len(spread)-1):
-            
-            # liquidate position
             print "liquidating positions"
             position = "cash"
-            
+         
+        pnl_prev = pnl;   
         pnl, holdings = adjustPosition( pnl, curr_spread, entry_spread, weights, initial, position, holdings )
         #print holdings
         if (initial != position and position == "cash"):
@@ -163,8 +161,12 @@ def backtest(spread, mavgs, thresholds, pnlarray):
         pnlarray.append(pnl)
         #print k, position, pnl
         if (k == len(spread)-1):
+            diff = pnl-pnl_prev;
+            if(diff > 0):
+                n_profitable += 1
+            else:
+                n_losses += 1
             print "pnl:", pnl, "good trades", n_profitable, "bad trades", n_losses, "total trades", n_profitable+n_losses
-
         
     trades = [longs, shorts]
     return pnl, trades
@@ -183,6 +185,21 @@ def generateThresholds():
 #@TODO
 def covariance(self, window):
     return 0
+
+def graphStocks(data):
+    stock1 = []
+    stock2 = []
+    stock3 = []
+    for line in data:
+        stock1price = float(line.split(',')[0])
+        stock2price = float(line.split(',')[1])
+        stock3price = float(line.split(',')[2])
+        stock1.append(stock1price)
+        stock2.append(stock2price)
+        #stock3.append(stock3price)
+    plt.plot(stock1, '-', stock2, '-', stock3, '-')
+    plt.show()
+
     
 def graph(spread, mavgs, trades, pnlarray):
     slow_mavg = mavgs[0]
@@ -202,17 +219,18 @@ def graph(spread, mavgs, trades, pnlarray):
 
 if __name__ == "__main__":
     #global pnl, entry_spread, curr_spread
-    #data = open("PairsRound1.csv", 'r')
-    data = open("case_data.csv", 'r')
-    
+    data = open("PairsRound1.csv", 'r')
+    #data = open("case_data.csv", 'r')
+    #graphStocks(data)
+
 
     pnlarray = []
-    thresholds = [3.0, 1.0, 10.0] # entry_threshold, exit_threshold, risk_threshold
+    thresholds = [1.0, 0.0, 5.0] # entry_threshold, exit_threshold, risk_threshold
     mavg_windows = [500, 50, 20] # [slow_mavg_window, fast_mavg_window, momentum_window]
     spread, mavgs = getData(data, mavg_windows)
     pnl, trades = backtest(spread, mavgs, thresholds, pnlarray)
-    #graph(spread, mavgs, trades, pnlarray)
-    
+    graph(spread, mavgs, trades, pnlarray)
+
 
 
 
