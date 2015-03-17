@@ -202,15 +202,16 @@ def graph(spread, mavgs, trades, pnlarray):
 
 if __name__ == "__main__":
     #global pnl, entry_spread, curr_spread
-    data = open("PairsRound1.csv", 'r')
+    #data = open("PairsRound1.csv", 'r')
+    data = open("case_data.csv", 'r')
     
 
     pnlarray = []
-    thresholds = [6.0, 0.0, 15.0] # entry_threshold, exit_threshold, risk_threshold
+    thresholds = [3.0, 1.0, 10.0] # entry_threshold, exit_threshold, risk_threshold
     mavg_windows = [500, 50, 20] # [slow_mavg_window, fast_mavg_window, momentum_window]
     spread, mavgs = getData(data, mavg_windows)
     pnl, trades = backtest(spread, mavgs, thresholds, pnlarray)
-    graph(spread, mavgs, trades, pnlarray)
+    #graph(spread, mavgs, trades, pnlarray)
     
 
 
