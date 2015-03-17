@@ -57,10 +57,6 @@ def adjustPosition( pnl, curr_spread, entry_spread, weights, initial, position, 
     if (initial == position): return pnl, holdings
     n_pairs = pos_limit / np.sum(np.abs(weights))
     desired_holdings = list(np.multiply( n_pairs*pos_multiple[position], weights ))
-    change = desired_holdings 
-    for k in xrange(len(holdings)):
-        change[k] -= holdings[k]
-    #print change
     pnl -= n_pairs*stock_spread
     #print pnl
     if (position == "cash"):
@@ -68,13 +64,13 @@ def adjustPosition( pnl, curr_spread, entry_spread, weights, initial, position, 
         #print "raw trade pnl", raw_trade_pnl
         pnl += raw_trade_pnl
     
-    print desired_holdings
+    print "Holdings: ", desired_holdings
     return pnl, desired_holdings
     
 def backtest(spread, mavgs, thresholds, pnlarray):
     holdings = [0.0, 0.0]
-    entries = [None]*1000
-    exits = [None]*1000
+    longs = [None]*1000
+    shorts = [None]*1000
     '''Parameters'''
     stdev_window = 20
     slow_mavg = mavgs[0]
@@ -102,14 +98,14 @@ def backtest(spread, mavgs, thresholds, pnlarray):
             if (diff >= entry_threshold*std >= 2.0*stock_spread and mavg_momentum[k] <= momentum_threshold):
                 entry_spread = spread[k]
                 position = "short"
-                entries[k] = entry_spread
-                print "cash -> short", k, curr_spread
+                shorts[k] = entry_spread
+                print "tick", k, "cash -> short", curr_spread
 
             elif (-diff >= entry_threshold*std >= 2.0*stock_spread and mavg_momentum[k] >= -momentum_threshold):
                 entry_spread = spread[k]
                 position = "long"
-                entries[k] = entry_spread
-                print "cash -> long", k, curr_spread
+                longs[k] = entry_spread
+                print "tick", k, "cash -> long", curr_spread
 
         elif (position == "short"):
             #if (diff <= exit_threshold*std and mavg_momentum[k] >= momentum_threshold):
@@ -118,17 +114,17 @@ def backtest(spread, mavgs, thresholds, pnlarray):
                 #print "short -> cash profit"
             if (diff <= exit_threshold*std and mavg_momentum[k] >= momentum_threshold):
                 position = "cash"
-                exits[k] = curr_spread
-                print "short -> cash profit", k, curr_spread
+                longs[k] = curr_spread
+                print "tick", k, "short -> cash profit", curr_spread
 
                 n_profitable += 1
             #if (mavg_momentum[k] >= momentum_threshold):
                 #position = "cash"
                 #print "short -> cash profit"
-            elif (diff >= risk_threshold*std):
+            elif (-diff >= risk_threshold*std):
                 position = "cash"
-                exits[k] = curr_spread
-                print "short -> cash loss", k, curr_spread
+                longs[k] = curr_spread
+                print "tick", k, "short -> cash loss", curr_spread
 
                 n_losses += 1
         
@@ -139,8 +135,8 @@ def backtest(spread, mavgs, thresholds, pnlarray):
                 #print "long -> cash profit"
             if (diff >= exit_threshold*std and mavg_momentum[k] <= -momentum_threshold):
                 position = "cash"
-                exits[k] = curr_spread
-                print "long -> cash profit", k, curr_spread
+                shorts[k] = curr_spread
+                print "tick", k, "long -> cash profit", curr_spread
 
                 n_profitable += 1
             #if (mavg_momentum[k] <= -momentum_threshold):
@@ -148,12 +144,13 @@ def backtest(spread, mavgs, thresholds, pnlarray):
                 #print "long -> cash profit"
             elif (-diff >= risk_threshold*std):
                 position = "cash" 
-                exits[k] = curr_spread
-                print "long -> cash loss", k, curr_spread
+                shorts[k] = curr_spread
+                print "tick", k, "long -> cash loss", curr_spread
                 n_losses += 1
 
         #print k, spread[k]
         if (k == len(spread)-1):
+            
             # liquidate position
             print "liquidating positions"
             position = "cash"
@@ -164,13 +161,12 @@ def backtest(spread, mavgs, thresholds, pnlarray):
             print "pnl:", pnl
 
         pnlarray.append(pnl)
-
         #print k, position, pnl
         if (k == len(spread)-1):
             print "pnl:", pnl, "good trades", n_profitable, "bad trades", n_losses, "total trades", n_profitable+n_losses
 
         
-    trades = [entries, exits]
+    trades = [longs, shorts]
     return pnl, trades
 
 #@TODO
@@ -195,8 +191,8 @@ def graph(spread, mavgs, trades, pnlarray):
     '''Plot'''
     fig, axes = plt.subplots(nrows=3)
     #plt.plot(stock1, '-', stock2, '-', stock3, '-')
-    axes[0].plot(trades[0], '^', ms = 10, color = 'r') # long
-    axes[0].plot(trades[1], 'v', ms = 10, color = 'g') # short
+    axes[0].plot(trades[0], '^', ms = 8, color = 'g') # long
+    axes[0].plot(trades[1], 'v', ms = 8, color = 'r') # short
     axes[0].plot(spread, '-')
     axes[0].plot(slow_mavg, '-')
     axes[0].plot(fast_mavg, '-')
@@ -214,7 +210,7 @@ if __name__ == "__main__":
     mavg_windows = [500, 50, 20] # [slow_mavg_window, fast_mavg_window, momentum_window]
     spread, mavgs = getData(data, mavg_windows)
     pnl, trades = backtest(spread, mavgs, thresholds, pnlarray)
-    #graph(spread, mavgs, trades, pnlarray)
+    graph(spread, mavgs, trades, pnlarray)
     
 
 
