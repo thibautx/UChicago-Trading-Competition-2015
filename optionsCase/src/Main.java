@@ -11,13 +11,29 @@ public class Main {
     static double alpha = 1.3;
     static double xi = 1.0;
     static double ema_decay = 0.1;
+    static double edge_estimate = 0.05;
     static double beta = 1.0;
+    static double beta_decay = 0.4;
+    static int hit_weight = 3;
+    static int miss_streak_weight = 10;
+    static int miss_count_trigger = 2;
 
     public static void main(String args[]) throws IOException {
 
         TestOptionsCase mycase = new TestOptionsCase();
+        if(args.length > 0) {
+            alpha = Double.parseDouble(args[0]);
+            xi = Double.parseDouble(args[1]);
+            ema_decay = Double.parseDouble(args[2]);
+            edge_estimate  = Double.parseDouble(args[3]);
+            beta = Double.parseDouble(args[4]);
+            beta_decay = Double.parseDouble(args[5]);
+            hit_weight = Integer.parseInt(args[6]);
+            miss_streak_weight = Integer.parseInt(args[7]);
+            miss_count_trigger = Integer.parseInt(args[8]);
+        }
 
-        mycase.initializeAlgo(alpha, xi, ema_decay, beta);
+        mycase.initializeAlgo(alpha, xi, ema_decay, edge_estimate, beta, beta_decay, hit_weight,miss_streak_weight, miss_count_trigger);
 
         File file = new File("C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\optionsCase\\python\\case_data.csv");
         File vol_file = new File("C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\optionsCase\\python\\vol_data.txt");

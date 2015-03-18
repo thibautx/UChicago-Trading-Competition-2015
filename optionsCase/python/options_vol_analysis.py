@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.linalg as npla
 
 
 def analyze(show_plot=True):
@@ -39,7 +40,9 @@ def analyze(show_plot=True):
         else:
             fill_count += 1
 
-    print str(fill_count) + " fills"
+
+    vol_diff = np.subtract(vol, estimate_vol_series)
+    vol_residual = npla.norm(vol_diff)
 
     output_file.close()
     vol_file.close()
@@ -62,9 +65,13 @@ def analyze(show_plot=True):
         #axes[1].legend([h3, h4], ['real pnl', 'pnl'], loc=2)
         #axes[2].legend([h5], ['vega'], loc=2)
 
+        print str(fill_count) + " fills"
+        print str(vol_residual) + " - vol residual"
+        print str(real_pnl_series[-1]) + " - PnL"
+
         plt.show()
 
-    return real_pnl_series[-1]
+    return real_pnl_series[-1], vol_residual, fill_count
 
 if __name__ == "__main__":
     analyze(show_plot=True)

@@ -40,25 +40,32 @@ public class TestOptionsCase {
     public EMA impliedVolEMA;
 
     /* parameters */
-    double alpha, xi, beta;
+    double alpha, xi, beta, hit_weight, edge_estimate;
 
-    double beta_decay_rate = 0.5;
+    double beta_decay_rate;
     double min_beta = 0.05;
     double cur_beta;
 
-    int miss_count_trigger = 0;
+    int miss_streak_weight;
+    int miss_count_trigger;
     int cur_miss_count = 0;
 
-    double d_vol_cap = 0.05;
+    double d_vol_cap = 0.25;
     double max_beta_d_vol = 0.15;
 
-    public void initializeAlgo(double alpha_, double xi_, double ema_decay_, double beta_) {
+    public void initializeAlgo(double alpha_, double xi_, double ema_decay_, double edge_estimate_,
+                               double beta_, double beta_decay_, int hit_weight_, int miss_streak_weight_, int miss_count_trigger_) {
 
         /* retrieve parameters */
         alpha = alpha_;
         xi = xi_;
+        edge_estimate = edge_estimate_;
         beta = beta_;
+        beta_decay_rate = beta_decay_;
         cur_beta = beta;
+        miss_streak_weight = miss_streak_weight_;
+        miss_count_trigger = miss_count_trigger_;
+        hit_weight = hit_weight_;
         impliedVolEMA = new EMA(ema_decay_);
 
         /* add initial vol to EMA */
@@ -74,11 +81,9 @@ public class TestOptionsCase {
     /* side = -1 => we bought */
     public void newFill(int strike, int side, double price) {
         System.out.println("Quote Fill, price=" + price + ", strike=" + strike + ", direction=" + side);
-        cur_miss_count = 0;
-        cur_beta = beta;
 
         /* estimate the true price by discounting the average edge our fills receive */
-        double truePrice = (side == -1) ? (price/0.96) : (price/1.04);
+        double truePrice = (side == -1) ? (price/(1 - edge_estimate)) : (price/(1 + edge_estimate));
 
         /* compute IV via bisection method */
         double lastVol = impliedVolatility(truePrice, strike);
@@ -90,13 +95,17 @@ public class TestOptionsCase {
         }
 
         /* add lastVol to IV EMA */
-        impliedVolEMA.average(lastVol);
-        //impliedVolEMA.average(lastVol);
+        for(int x = 0; x < hit_weight * (1 + miss_streak_weight*Math.max(0, cur_miss_count-miss_count_trigger)); x++) {
+            impliedVolEMA.average(lastVol);
+        }
+
+        /*
         if(-1*side == Math.signum(getTotalVegaRisk())){
             for(int x = 0; x < 2; x++) {
                 impliedVolEMA.average(lastVol);
             }
         }
+        */
 
         /* update position */
         positions.put(strike, positions.get(strike) - side);
@@ -104,6 +113,9 @@ public class TestOptionsCase {
         cash += side*price;
 
         double vega = getTotalVegaRisk();
+
+        cur_miss_count = 0;
+        cur_beta = beta;
         //impliedVolEMA.average(impliedVolEMA.get() + minAbs(vega * cur_beta, Math.signum(vega) * max_beta_d_vol));
 
         //System.out.println("Vol = " + impliedVolEMA.get());
@@ -138,9 +150,13 @@ public class TestOptionsCase {
     public void noBrokerFills() {
         //System.out.println("No match against broker the broker orders...time to adjust some levers?");
         //if(cur_miss_count == miss_count_trigger) {
+        if(cur_miss_count >= 5){
+            cur_beta = beta;
+            //cur_miss_count = 0;
+        }
             double vega = getTotalVegaRisk();
             impliedVolEMA.average(impliedVolEMA.get() - minAbs(vega * cur_beta, Math.signum(vega) * max_beta_d_vol));
-            //cur_miss_count = 0;
+            cur_miss_count++;
             cur_beta = Math.max(min_beta, cur_beta*beta_decay_rate);
         //} else {
         //    cur_miss_count++;
@@ -160,7 +176,8 @@ public class TestOptionsCase {
         double vega = OptionsMathUtils.calculateVega(strike, vol);
         //double delta = vega * volSD * alpha;
         double delta = volSD * alpha;
-        double omega = totalVegaRisk * xi;
+        double m = 1;// + Math.max(0, cur_miss_count-miss_count_trigger);
+        double omega = m * totalVegaRisk * xi;
         double bidPrice = theoPrice * (1 - delta - Math.max(-0.02, omega));
         double askPrice = theoPrice * (1 + delta - Math.min(0.02, omega));
         //System.out.println("Bid omega is " + -1*Math.max(omega/5, omega));
@@ -181,7 +198,7 @@ public class TestOptionsCase {
             assets += positions.get(strike) * OptionsMathUtils.theoValue(strike, vol);
         }
 
-        return cash + assets;
+        return 100*(cash + assets);
 
     }
 
