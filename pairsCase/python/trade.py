@@ -1,12 +1,24 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
 #global pnl, entry_spread, curr_spread, stock_spread, pos_multiple, pos_limit
 global pos_limit, pos_multiple, stock_spread, weights
 pos_limit = 40
 weights = [1.0, -1.0]
 pos_multiple = {"cash":0.0, "short":-1.0, "long":1.0}
 stock_spread = 1.0
+
+"""
+Ideas:
+    - different risk thresholds/parameters for different pairs?
+    - a tick exit limit to limit holding period, or decreasing risk_threshold
+
+TODO: 
+    - covariance generator (find pairs)
+    - parameter tuner / run a bunch of tests
+
+"""
+
+
 
 '''Returns spread, slow_mavg, fast_mavg, mavg_momentum'''
 def getData(data, mavg_windows):
@@ -48,7 +60,7 @@ def movingaverage (data, window):
 def movingAverageDeriv(data):
     ret = [0]
     for point in xrange(len(data)-1):
-        ret.append(10*(data[point+1]-data[point]))
+        ret.append(3*(data[point+1]-data[point]))
     return ret
 
 '''Backtest & Signal Generation'''
@@ -225,11 +237,11 @@ if __name__ == "__main__":
 
 
     pnlarray = []
-    thresholds = [1.0, 0.0, 5.0] # entry_threshold, exit_threshold, risk_threshold
+    thresholds = [2.0, 0.0, 20.0] # entry_threshold, exit_threshold, risk_threshold
     mavg_windows = [500, 50, 20] # [slow_mavg_window, fast_mavg_window, momentum_window]
     spread, mavgs = getData(data, mavg_windows)
     pnl, trades = backtest(spread, mavgs, thresholds, pnlarray)
-    graph(spread, mavgs, trades, pnlarray)
+    #graph(spread, mavgs, trades, pnlarray)
 
 
 
