@@ -11,12 +11,12 @@ public class Main {
     static double alpha = 1.3;
     static double xi = 1.0;
     static double ema_decay = 0.1;
-    static double edge_estimate = 0.05;
-    static double beta = 1.0;
-    static double beta_decay = 0.4;
+    static double edge_estimate = 0.04;
+    static double beta = 0.05;
+    static double beta_decay = 0.9;
     static int hit_weight = 3;
-    static int miss_streak_weight = 10;
-    static int miss_count_trigger = 2;
+    static int miss_streak_weight = 5;
+    static int miss_count_trigger = 3;
 
     public static void main(String args[]) throws IOException {
 
