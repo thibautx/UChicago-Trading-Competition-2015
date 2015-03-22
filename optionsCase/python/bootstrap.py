@@ -10,17 +10,19 @@ from pprint import PrettyPrinter
 
 PLOT = False
 
-total_runs = 200
+total_runs = 20
 
-alpha = [1.3]
-xi = [1.0]
+alpha = [1.0]
+xi = [2.0]
 ema_decay = [0.1]
-edge_estimate = [0.05]
-beta = [0.0, 0.05]
-beta_decay = [0.9]
-hit_weight = [3]
-miss_streak_weight = [5]
+edge_estimate = [0.04]
+beta = [0.0]
+beta_decay = [0.4]
+hit_weight = [5]
+miss_streak_weight = [3]
 miss_count_trigger = [3]
+iota = [0.0]
+fucked_up_trigger = [10, 100]
 
 # best is (1.3, 1.0, 0.1, 0.04, 0.0, 0.9, 3, 5, 3)
 '''
@@ -39,7 +41,7 @@ test_results = {}
 results = {}
 final_results = {}
 
-param_list = [alpha, xi, ema_decay, edge_estimate, beta, beta_decay, hit_weight, miss_streak_weight, miss_count_trigger]
+param_list = [alpha, xi, ema_decay, edge_estimate, beta, beta_decay, hit_weight, miss_streak_weight, miss_count_trigger, iota, fucked_up_trigger]
 
 #print len([p for p in itertools.product(*param_list)])
 

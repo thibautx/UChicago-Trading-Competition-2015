@@ -1,6 +1,8 @@
 import org.uchicago.options.OptionsHelpers.*;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Created by Greg Pastorek on 3/11/2015.
@@ -8,15 +10,19 @@ import java.io.*;
 public class Main {
 
     final static boolean USE_REAL_VOL = false;
-    static double alpha = 1.3;
-    static double xi = 1.0;
-    static double ema_decay = 0.1;
+    static double alpha = 1.0;
+    static double xi = 2.0;
+    static double ema_decay = 0.9;
     static double edge_estimate = 0.04;
-    static double beta = 0.05;
+    static double iota = 0.000;
+    static double beta = 0.0;
     static double beta_decay = 0.9;
-    static int hit_weight = 3;
-    static int miss_streak_weight = 5;
+    static int hit_weight = 5;
+    static int miss_streak_weight = 3;
     static int miss_count_trigger = 3;
+    static int fucked_up_trigger = 100;
+
+    static LinkedList<Double> vegaQueue = new LinkedList<Double>();
 
     public static void main(String args[]) throws IOException {
 
@@ -31,9 +37,11 @@ public class Main {
             hit_weight = Integer.parseInt(args[6]);
             miss_streak_weight = Integer.parseInt(args[7]);
             miss_count_trigger = Integer.parseInt(args[8]);
+            iota = Double.parseDouble(args[9]);
+            fucked_up_trigger = Integer.parseInt(args[10]);
         }
 
-        mycase.initializeAlgo(alpha, xi, ema_decay, edge_estimate, beta, beta_decay, hit_weight,miss_streak_weight, miss_count_trigger);
+        mycase.initializeAlgo(alpha, xi, ema_decay, edge_estimate, iota, beta, beta_decay, hit_weight,miss_streak_weight, miss_count_trigger, fucked_up_trigger);
 
         File file = new File("C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\optionsCase\\python\\case_data.csv");
         File vol_file = new File("C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\optionsCase\\python\\vol_data.txt");
@@ -42,6 +50,7 @@ public class Main {
         BufferedReader vol_br = new BufferedReader(new FileReader(vol_file));
         br.readLine();
         String line;
+        int tick = 0;
         while ((line = br.readLine()) != null) {
             String[] line_split = line.split(",");
             String vol_line = vol_br.readLine();
@@ -54,6 +63,7 @@ public class Main {
             int direction = Integer.parseInt(line_split[0]);
             int strike = Integer.parseInt(line_split[1]);
             double price = Double.parseDouble(line_split[2]);
+            System.out.println("Order: " + strike + "|" + price + "|" + direction + "|" + tick);
             QuoteList qlist = mycase.getCurrentQuotes();
             Quote q = null;
             switch (strike){
@@ -97,7 +107,18 @@ public class Main {
             double real_pnl = mycase.getPnL(real_vol);
             System.out.println("Real PnL = " + real_pnl);
             double real_vega = mycase.getTotalVegaRisk(real_vol);
+            vegaQueue.add(real_vega);
+            if(vegaQueue.size() > 10){
+                vegaQueue.poll();
+                String str = "";
+                for(Double v : vegaQueue){
+                    str += v + "|";
+                }
+                System.out.println("vega series = " + str);
+                System.out.println("Vol diff = " + (real_vol - mycase.impliedVolEMA.get()));
+            }
             System.out.println("Real vega = " + real_vega);
+            tick++;
         }
 
     }

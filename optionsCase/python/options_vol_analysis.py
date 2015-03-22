@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import numpy.linalg as npla
 
+#PLOT_PRICE = True
+PLOT_PRICE = False
 
 def analyze(show_plot=True):
     output_file = open('output.txt')
@@ -15,6 +17,23 @@ def analyze(show_plot=True):
     real_pnl_series = []
     fill_diff_series = []
     real_vega_series = []
+    q_series = []
+
+    prices = {
+        80: [[], []],
+        90: [[], []],
+        100: [[], []],
+        110: [[], []],
+        120: [[], []]
+    }
+
+    orders = {
+        80: [[], []],
+        90: [[], []],
+        100: [[], []],
+        110: [[], []],
+        120: [[], []]
+    }
 
     fill_count = 0
 
@@ -25,9 +44,6 @@ def analyze(show_plot=True):
         elif line[:6] == "PnL = ":
             pnl = float(line[6:])
             pnl_series.append(pnl)
-        elif line[:7] == "Vega = ":
-            vega = float(line[7:])
-            vega_series.append(vega)
         elif line[:12] == "Real vega = ":
             real_vega = float(line[12:])
             real_vega_series.append(real_vega)
@@ -37,18 +53,29 @@ def analyze(show_plot=True):
         elif line[:12] == "Fill diff = ":
             fill_diff = float(line[12:])
             fill_diff_series.append(fill_diff)
+        elif line[:7] == "Quote: ":
+            l = map(float, line[7:-1].split("|"))
+            prices[int(l[0])][0].append(l[1])
+            prices[int(l[0])][1].append(l[2])
+        elif line[:7] == "Order: ":
+            strike, price, dir, tick = map(float, line[7:-1].split("|"))
+            d = 1 if int(dir) == 1 else 0
+            orders[int(strike)][d].append((tick, price))
+        elif line[:4] == "q = ":
+            q_series.append(float(line[4:]))
         else:
             fill_count += 1
 
 
-    vol_diff = np.subtract(vol, estimate_vol_series)
+    vol_diff = np.subtract(true_vol_series, estimate_vol_series)
     vol_residual = npla.norm(vol_diff)
 
     output_file.close()
     vol_file.close()
 
     if show_plot:
-        fig, axes = plt.subplots(nrows=4)
+        n = 10 if PLOT_PRICE else 5
+        fig, axes = plt.subplots(nrows=n)
         #ax = fig.add_subplot(2, 1, 1)
 
         L = len(true_vol_series)
@@ -58,8 +85,16 @@ def analyze(show_plot=True):
         h3, = axes[1].plot(np.arange(0, L), real_pnl_series)
         h4, = axes[1].plot(np.arange(0, L), pnl_series)
         h5, = axes[2].plot(np.arange(0, L), real_vega_series)
-        h6, = axes[2].plot(np.arange(0, L), vega_series)
         h7, = axes[3].plot(np.arange(0, L), fill_diff_series)
+        h8, = axes[4].plot(q_series)
+
+        if PLOT_PRICE:
+            for i in xrange(0, 5):
+                axes[5+i].plot(prices[80 + 10*i][0])
+                axes[5+i].plot(prices[80 + 10*i][1])
+                axes[5+i].scatter(*zip(*orders[80 + 10*i][0]), color='blue')
+                axes[5+i].scatter(*zip(*orders[80 + 10*i][1]), color='red')
+                axes[5+i].set_xlim([0, 100])
 
         #axes[0].legend([h1, h2], ['true', 'guess'], loc=1)
         #axes[1].legend([h3, h4], ['real pnl', 'pnl'], loc=2)
