@@ -198,7 +198,7 @@ def compute_score(mode=False):
                 transaction_cost2 = -20 * np.sum(np.exp(np.abs(myweights - last_weights) / 20) - 1)
                 transaction_cost = -1 * np.sum(np.exp(np.abs(myweights - last_weights)) - 1)
 
-                transaction_cost = 0
+                #transaction_cost = 0
 
                 #if transaction_cost2 > transaction_cost:
                 #    raise Exception("FUCK")
