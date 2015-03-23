@@ -11,8 +11,8 @@ from os import path
 ''' --- parameters --- '''
 
 ROUND = 1
-PLOT_BENCHMARK = False
-OFFSET = 9000
+PLOT_BENCHMARK = True
+OFFSET = 7000
 WINDOW_LENGTH = 1000
 
 ''' ------------------ '''
@@ -102,7 +102,7 @@ for i, sec in enumerate(securities):
 P = np.corrcoef(Y, Y)[:n, :n]
 
 # dumb_mode simply evenly distributes all the weights
-def compute_score(dumb_mode=False):
+def compute_score(mode=False):
 
     K = 1
 
@@ -132,6 +132,9 @@ def compute_score(dumb_mode=False):
                         while not cur_tradable[substitute]:
                             Pc[sec, substitute] = 0
                             substitute = np.argmax(Pc[sec])
+                            if mode == 'random':
+                                if substitute != sec:
+                                    substitute = np.random.randint(0, high=30)
 
                         sub_ind = np.argmax(last_substitutions[sec, :])
 
@@ -151,7 +154,7 @@ def compute_score(dumb_mode=False):
 
                     last_substitutions = np.copy(substitutions)
 
-                    if dumb_mode:
+                    if mode == 'dumb':
                         z = len(filter(lambda x: x > 0, myweights)) / 30.0
                         myweights = np.array(map(lambda x: 1/z if x > 0 else 0, myweights))
 
@@ -180,7 +183,7 @@ def compute_score(dumb_mode=False):
     return index_s, est_s, score
 
 
-index_s, est_s, score = compute_score(dumb_mode=False)
+index_s, est_s, score = compute_score()
 
 
 #ax = fig.add_subplot(2, 1, 1)
@@ -194,7 +197,7 @@ H = [h3]
 L = ["score"]
 
 if PLOT_BENCHMARK:
-    _, _, benchmark = compute_score(dumb_mode=True)
+    _, _, benchmark = compute_score(mode='random')
     h4, = axes[1].plot(benchmark)
     H.append(h4)
     L.append("benchmark")
