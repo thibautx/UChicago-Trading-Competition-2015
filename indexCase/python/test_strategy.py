@@ -12,7 +12,7 @@ from os import path
 
 ROUND = 1
 PLOT_BENCHMARK = True
-OFFSET = 6000
+OFFSET = 0000
 WINDOW_LENGTH = 1000
 
 ''' ------------------ '''
@@ -49,7 +49,7 @@ with open(tradable_init_file) as f:
         if int(line) == 1:
             tradable[1][i] = True
         else:
-            tradable[1][i] = True
+            tradable[1][i] = False
 
 # create 2-level dictionary of tick mapping to security mapping to tradable
 with open(tradable_changes_file) as f:
@@ -62,7 +62,6 @@ with open(tradable_changes_file) as f:
         else:
             tradable[tick][sec] = False
         last_tradable = tradable[tick]
-
 
 with open(weights_file) as f:
     for line in f.readlines():
@@ -135,7 +134,10 @@ def compute_score(mode=False):
                             substitute = np.argmax(Pc[sec])
                             if mode == 'random':
                                 if substitute != sec:
-                                    substitute = np.random.randint(0, high=30)
+                                    substitute = sec
+                                    while not cur_tradable[substitute]:
+                                        substitute = np.random.randint(0, high=30)
+
 
                         sub_ind = np.argmax(last_substitutions[sec, :])
 
@@ -161,6 +163,7 @@ def compute_score(mode=False):
 
                 vals = map(float, line.split(","))
                 index = index_prices[i-1]
+
                 est = np.dot(vals[:-1], myweights) / K
 
                 # at first tick adjust K so that the prices are alligned
