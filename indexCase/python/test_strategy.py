@@ -14,8 +14,7 @@ ROUND = 1
 PLOT_BENCHMARK = False
 OFFSET = 2000
 WINDOW_LENGTH = 1000
-BOOBS = 3.153402393209
-WEIGHT_LIMIT = 0.3
+WEIGHT_LIMIT = 0.1
 ''' ------------------ '''
 
 BASE_DIR = path.dirname(path.dirname(__file__))
@@ -110,6 +109,7 @@ def compute_score(mode=False):
 
     index_s = []
     est_s = []
+    ret_s = []
 
     myweights = np.copy(weights)
 
@@ -117,10 +117,19 @@ def compute_score(mode=False):
 
     t_cost_series = [0]
 
+    last_vals = None
+    first_val = None
+
     with open(data_file) as f:
         for i, line in enumerate(f.readlines()):
             last_weights = myweights
             if i >= start and i <= end:
+
+                if not last_vals:
+                    last_vals = map(float, line.split(","))
+                if not first_val:
+                    first_val = np.dot(weights, map(float, line.split(","))[:-1])
+
                 # if we are at a tradable change, make adjustments
                 if i in tradable:
                     vals = map(float, line.split(","))
@@ -151,7 +160,8 @@ def compute_score(mode=False):
                                 raise Exception("2 - No nonzero sub weight found for {}".format(sec))
 
                             # k * p_sub * w_sub = p_lsub * w_sec_lsub
-                            sub_weight = last_substitutions[sec, sub_ind] * vals[sub_ind] / vals[substitute]
+                            #sub_weight = last_substitutions[sec, sub_ind] * vals[sub_ind] / vals[substitute]
+                            sub_weight = weights[sec]
 
                             Pc[sec, substitute] = 0
 
@@ -173,34 +183,58 @@ def compute_score(mode=False):
                 vals = map(float, line.split(","))
                 index = index_prices[i-1]
 
-                est = np.dot(vals[:-1], myweights / K)
+                #print np.sum(myweights / np.sum(myweights))
+
+                #myweights /= np.sum(myweights)
+
+                #est = np.dot(vals[:-1], myweights)
+                last_est = np.dot(last_vals[:-1], myweights)
+                est = np.dot(vals[:-1], myweights)
+                ret = est - last_est
+                est /= last_est
 
                 #if i == 100:
                 #    print myweights - last_weights
-                #transaction_cost = -20 * np.sum(np.exp(np.abs(myweights - last_weights) / 20) - 1)
+                transaction_cost2 = -20 * np.sum(np.exp(np.abs(myweights - last_weights) / 20) - 1)
                 transaction_cost = -1 * np.sum(np.exp(np.abs(myweights - last_weights)) - 1)
+
+                transaction_cost = 0
+
+                #if transaction_cost2 > transaction_cost:
+                #    raise Exception("FUCK")
 
                 t_cost_series.append(transaction_cost + t_cost_series[-1])
 
                 # at first tick adjust K so that the prices are alligned
-                if K == 1:
-                    K = est / index
-                    est /= K
+                #if K == 1:
+                #    K = est / index
+                #    est /= K
                 index_s.append(index)
                 est_s.append(est)
+                ret_s.append(ret)
+
+                last_vals = vals
 
 
     index_returns = np.array(map(np.log, np.divide(index_s[1:], index_s[:-1])))
-    est_returns = np.array(map(np.log, np.divide(est_s[1:], est_s[:-1])))
+    #est_returns = np.array(map(np.log, np.divide(est_s[1:], est_s[:-1])))
+    est_returns = np.array(map(np.log, est_s))
 
-    returns_diff = index_returns - est_returns
+    #print est_returns
+
+    returns_diff = index_returns - est_returns[1:]
 
     score = [0, -returns_diff[0]**2]
 
     for rd in returns_diff[1:]:
         score.append(score[-1] - rd**2)
 
-    return np.array(index_s), np.array(est_s), np.array(score), np.array(t_cost_series[1:])
+    portfolio_s = [first_val]
+
+    for r in ret_s[1:]:
+        portfolio_s.append(r + portfolio_s[-1])
+
+    return np.array(index_s), np.array(portfolio_s), np.array(score), np.array(t_cost_series[1:])
 
 
 index_s, est_s, score, t_costs = compute_score(mode='normal')
