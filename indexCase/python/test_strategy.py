@@ -5,31 +5,34 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from copy import deepcopy
 
-# -0.115153840366
-# -0.113153840366
-
-DUMB_MODE = True
-REBALANCE_SUB_SUBBED = True
-REBALANCE_REENTRY = True
-
-n_components = 15
-
-data_file = "C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\indexCase\\market-data\\round1\\prices.csv"
-weights_file = "C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\indexCase\\market-data\\round1\\capWeights.csv"
-tradable_changes_file = "C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\indexCase\\market-data\\round1\\tradable_changes.csv"
-tradable_init_file = "C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\indexCase\\market-data\\round1\\tradable_init.csv"
+from os import path
 
 
-# note, index is 31
-# securities = np.concatenate([np.arange(0, 5), [30]])
+''' --- parameters --- '''
+
+ROUND = 1
+PLOT_BENCHMARK = False
+OFFSET = 0000
+WINDOW_LENGTH = 1000
+
+''' ------------------ '''
+
+BASE_DIR = path.dirname(path.dirname(__file__))
+DATA_DIR = path.join(BASE_DIR, "market-data")
+ROUND_DIR = path.join(DATA_DIR, "round{}".format(ROUND))
+
+data_file = path.join(ROUND_DIR, "prices.csv")
+weights_file = path.join(ROUND_DIR, "capWeights.csv")
+tradable_changes_file = path.join(ROUND_DIR, "tradable_changes.csv")
+tradable_init_file = path.join(ROUND_DIR, "tradable_init.csv")
+
 securities = np.arange(0, 30)
 
-plot_start = 1
-plot_end = 1000
-offset = 0000
+offset = OFFSET
+window_length = WINDOW_LENGTH
 
-plot_start += offset
-plot_end += offset
+start = 1 + offset
+end = window_length + offset
 
 prices = {sec: [] for sec in securities}
 index_prices = []
@@ -39,6 +42,7 @@ weights = []
 tradable = {}
 cur_tradable = None
 
+# initialize tradable dictionary
 with open(tradable_init_file) as f:
     tradable[1] = {}
     for i, line in enumerate(f.readlines()):
@@ -47,6 +51,7 @@ with open(tradable_init_file) as f:
         else:
             tradable[1][i] = True
 
+# create 2-level dictionary of tick mapping to security mapping to tradable
 with open(tradable_changes_file) as f:
     last_tradable = tradable[1]
     for line in f.readlines():
@@ -58,19 +63,21 @@ with open(tradable_changes_file) as f:
             tradable[tick][sec] = False
         last_tradable = tradable[tick]
 
+
 with open(weights_file) as f:
     for line in f.readlines():
         weight = float(line)
         weights.append(weight)
 
+
 with open(data_file) as f:
     for i, line in enumerate(f.readlines()):
-        if i >= plot_start and i <= plot_end:
+        if i >= start and i <= end:
             vals = map(float, line.split(","))
             for k, sec in enumerate(securities):
-                #w = weights[sec]
                 prices[sec].append(vals[sec])
             index_prices.append(vals[-1])
+
 
 n = len(securities)
 m = len(prices[0]) - 1
@@ -79,8 +86,10 @@ Y = np.zeros((n, m))
 for i, sec in enumerate(securities):
     R[i:] = np.diff(prices[sec]) / prices[sec][:-1]
 
+
 means = []
-stds = []
+stds = []   # hehe
+
 
 for i, sec in enumerate(securities):
     R_mean = np.average(R[i, :])
@@ -89,35 +98,11 @@ for i, sec in enumerate(securities):
     stds.append(R_std)
     Y[i:] = (R[i, :] - R_mean) / R_std
 
+
 P = np.corrcoef(Y, Y)[:n, :n]
 
-#for i in xrange(0, 30):
-#    P[i, i] = 0
-
-E = sorted(zip(*npla.eig(P)), key=lambda x: x[0], reverse=True)
-
-evals, evects = zip(*E)
-
-
-Q = np.zeros((30, 30))
-
-for i, vect in enumerate(evects):
-    for j in xrange(0, len(vect)):
-        if vect[j] > 0:
-            Q[i, j] = vect[j] / stds[j]
-
-
-
-
-myweights = np.zeros(len(evects[0]))
-for q in Q[:]:
-    #print q
-    #myweights += q / npla.norm(q)
-    myweights += q
-
-#myweights = np.ones(30)
-
-def compute_score(DUMB_MODE=False):
+# dumb_mode simply evenly distributes all the weights
+def compute_score(dumb_mode=False):
 
     K = 1
 
@@ -130,6 +115,8 @@ def compute_score(DUMB_MODE=False):
 
     with open(data_file) as f:
         for i, line in enumerate(f.readlines()):
+
+            # if we are at a tradable change, make adjustments
             if i in tradable:
                 vals = map(float, line.split(","))
                 myweights = np.zeros(30)
@@ -163,18 +150,19 @@ def compute_score(DUMB_MODE=False):
 
                 last_substitutions = np.copy(substitutions)
 
-                if DUMB_MODE:
+                if dumb_mode:
                     z = len(filter(lambda x: x > 0, myweights)) / 30.0
                     myweights = np.array(map(lambda x: 1/z if x > 0 else 0, myweights))
 
-            if i >= plot_start and i <= plot_end:
+            if i >= start and i <= end:
                 vals = map(float, line.split(","))
                 index = index_prices[i-1-offset]
                 est = np.dot(vals[:-1], myweights) / K
+
+                # at first tick adjust K so that the prices are alligned
                 if K == 1:
                     K = est / index
                     est /= K
-                #print est / index
                 index_s.append(index)
                 est_s.append(est)
 
@@ -191,30 +179,9 @@ def compute_score(DUMB_MODE=False):
 
     return index_s, est_s, score
 
-# print P
 
+index_s, est_s, score = compute_score(dumb_mode=False)
 
-m = 0
-im = 0
-jm = 0
-for i in xrange(0, 30):
-    for j in xrange(0, 30):
-        if P[i, j] != 1.0:
-            if P[i, j] > m:
-                m = P[i, j]
-                im = i
-                jm = j
-            m = max(P[i, j], m)
-
-#print m, im, jm
-
-#pca = PCA(n_components=n_components)
-
-#pca.fit(P)
-
-
-index_s, est_s, score = compute_score(DUMB_MODE=False)
-_, _, benchmark = compute_score(DUMB_MODE=False)
 
 #ax = fig.add_subplot(2, 1, 1)
 fig, axes = plt.subplots(nrows=2)
@@ -223,7 +190,14 @@ h1, = axes[0].plot(index_s)
 h2, = axes[0].plot(est_s)
 
 h3, = axes[1].plot(score)
-h4, = axes[1].plot(benchmark)
+H = [h3]
+L = ["score"]
+
+if PLOT_BENCHMARK:
+    _, _, benchmark = compute_score(dumb_mode=True)
+    h4, = axes[1].plot(benchmark)
+    H.append(h4)
+    L.append("benchmark")
 
 box = axes[0].get_position()
 axes[0].set_position([box.x0, box.y0, box.width * 0.8, box.height])
@@ -232,7 +206,7 @@ axes[0].legend([h1, h2], ['index', 'portfolio'], loc='center left', bbox_to_anch
 
 box = axes[1].get_position()
 axes[1].set_position([box.x0, box.y0, box.width * 0.8, box.height])
-axes[1].legend([h3, h4], ['score', 'benchmark'], loc='center left', bbox_to_anchor=(1, 0.5))
+axes[1].legend(H, L, loc='center left', bbox_to_anchor=(1, 0.5))
 
 print score[-1]
 
