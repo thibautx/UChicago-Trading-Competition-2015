@@ -11,8 +11,8 @@ from os import path
 ''' --- parameters --- '''
 
 ROUND = 1
-PLOT_BENCHMARK = True
-OFFSET = 0000
+PLOT_BENCHMARK = False
+OFFSET = 2000
 WINDOW_LENGTH = 1000
 
 ''' ------------------ '''
@@ -101,6 +101,7 @@ for i, sec in enumerate(securities):
 
 P = np.corrcoef(Y, Y)[:n, :n]
 
+
 # dumb_mode simply evenly distributes all the weights
 def compute_score(mode=False):
 
@@ -113,9 +114,11 @@ def compute_score(mode=False):
 
     last_substitutions = np.diag(weights)
 
+    t_cost_series = [0]
+
     with open(data_file) as f:
         for i, line in enumerate(f.readlines()):
-
+            last_weights = myweights
             if i >= start and i <= end:
                 # if we are at a tradable change, make adjustments
                 if i in tradable:
@@ -137,7 +140,6 @@ def compute_score(mode=False):
                                     substitute = sec
                                     while not cur_tradable[substitute]:
                                         substitute = np.random.randint(0, high=30)
-
 
                         sub_ind = np.argmax(last_substitutions[sec, :])
 
@@ -164,7 +166,12 @@ def compute_score(mode=False):
                 vals = map(float, line.split(","))
                 index = index_prices[i-1]
 
-                est = np.dot(vals[:-1], myweights) / K
+                est = np.dot(vals[:-1], myweights / K)
+
+                # TODO - make transaction cost model actually span 20 ticks
+                transaction_cost = -20 * np.sum(np.exp(np.abs(myweights - last_weights) / 20) - 1)
+
+                t_cost_series.append(transaction_cost + t_cost_series[-1])
 
                 # at first tick adjust K so that the prices are alligned
                 if K == 1:
@@ -179,16 +186,15 @@ def compute_score(mode=False):
 
     returns_diff = index_returns - est_returns
 
-    score = [-returns_diff[0]**2]
+    score = [0, -returns_diff[0]**2]
 
     for rd in returns_diff[1:]:
         score.append(score[-1] - rd**2)
 
-    return index_s, est_s, score
+    return np.array(index_s), np.array(est_s), np.array(score), np.array(t_cost_series[1:])
 
 
-index_s, est_s, score = compute_score(mode='normal')
-
+index_s, est_s, score, t_costs = compute_score(mode='normal')
 
 #ax = fig.add_subplot(2, 1, 1)
 fig, axes = plt.subplots(nrows=2)
@@ -197,13 +203,15 @@ h1, = axes[0].plot(index_s)
 h2, = axes[0].plot(est_s)
 
 h3, = axes[1].plot(score)
-H = [h3]
-L = ["score"]
+h4, = axes[1].plot(t_costs)
+h5, = axes[1].plot(score+t_costs)
+H = [h3, h4, h5]
+L = ["score", "t cost", "total"]
 
 if PLOT_BENCHMARK:
-    _, _, benchmark = compute_score(mode='random')
-    h4, = axes[1].plot(benchmark)
-    H.append(h4)
+    _, _, benchmark, t_costs = compute_score(mode='random')
+    h6, = axes[1].plot(benchmark+t_costs)
+    H.append(h6)
     L.append("benchmark")
 
 box = axes[0].get_position()
