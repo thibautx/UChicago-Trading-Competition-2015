@@ -8,9 +8,6 @@ import org.uchicago.pairs.PairsHelper.Ticker;
 import org.uchicago.pairs.core.PairsInterface;
 import org.uchicago.pairs.PairsUtils;
 
-
-
-
 public class PairsCaseSample extends AbstractPairsCase implements PairsInterface {
 
     private IDB myDatabase;
@@ -148,6 +145,6 @@ public class PairsCaseSample extends AbstractPairsCase implements PairsInterface
 
     @Override
     public PairsInterface getImplementation() {
-        return null;
+        return this;
     }
 }
