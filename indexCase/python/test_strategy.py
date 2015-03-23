@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 import numpy.linalg as npla
 import matplotlib.pyplot as plt
@@ -15,6 +16,7 @@ PLOT_BENCHMARK = False
 OFFSET = 2000
 WINDOW_LENGTH = 1000
 WEIGHT_LIMIT = 0.1
+substitution_window = 1
 ''' ------------------ '''
 
 BASE_DIR = path.dirname(path.dirname(__file__))
@@ -113,16 +115,17 @@ def compute_score(mode=False):
 
     myweights = np.copy(weights)
 
-    last_substitutions = np.diag(weights)
-
     t_cost_series = [0]
 
     last_vals = None
     first_val = None
 
+    transitions = []
+    cur_subs = {}
+
     with open(data_file) as f:
         for i, line in enumerate(f.readlines()):
-            last_weights = myweights
+            last_weights = np.copy(myweights)
             if i >= start and i <= end:
 
                 if not last_vals:
@@ -133,48 +136,56 @@ def compute_score(mode=False):
                 # if we are at a tradable change, make adjustments
                 if i in tradable:
                     vals = map(float, line.split(","))
-                    myweights = np.zeros(30)
                     cur_tradable = tradable[i]
-                    substitutions = np.zeros((30, 30))
-
+                    myweights = np.zeros(30)
                     for sec in securities:
 
                         Pc = np.copy(P)
 
-                        sub_weight = np.inf
-
-                        while sub_weight > WEIGHT_LIMIT:
-                            substitute = np.argmax(Pc[sec])
-                            while not cur_tradable[substitute]:
-                                Pc[sec, substitute] = 0
-                                substitute = np.argmax(Pc[sec])
-                                if mode == 'random':
-                                    if substitute != sec:
-                                        substitute = sec
-                                        while not cur_tradable[substitute]:
-                                            substitute = np.random.randint(0, high=30)
-
-                            sub_ind = np.argmax(last_substitutions[sec, :])
-
-                            if last_substitutions[sec, sub_ind] == 0:
-                                raise Exception("2 - No nonzero sub weight found for {}".format(sec))
-
-                            # k * p_sub * w_sub = p_lsub * w_sec_lsub
-                            #sub_weight = last_substitutions[sec, sub_ind] * vals[sub_ind] / vals[substitute]
-                            sub_weight = weights[sec]
-
+                        substitute = np.argmax(Pc[sec])
+                        while not cur_tradable[substitute]:
                             Pc[sec, substitute] = 0
-
-                        myweights[substitute] += sub_weight
-                        substitutions[sec, substitute] = sub_weight
-
-                        if substitutions[sec, substitute] == 0:
-                            raise Exception("4 - computed a zero sub_weight")
+                            substitute = np.argmax(Pc[sec])
+                            if mode == 'random':
+                                if substitute != sec:
+                                    substitute = sec
+                                    while not cur_tradable[substitute]:
+                                        substitute = np.random.randint(0, high=30)
 
                         if sec != substitute:
-                            myweights[sec] = 0
+                            t = {
+                                    'sec': sec,
+                                    'sub': substitute,
+                                    'remaining': substitution_window,
+                                    'value': weights[sec] / substitution_window
+                            }
+                            transitions.append(t)
+                            cur_subs[sec] = {
+                                'sub': substitute,
+                                'remaining': substitution_window,
+                                'transaction': t
+                            }
+                        else:
+                            w = weights[sec]
+                            transitions.append({'sec': None, 'sub': sec, 'remaining': 1, 'value': w})
 
-                    last_substitutions = np.copy(substitutions)
+                    for t in np.copy(transitions):
+                        sec = t['sec']
+                        sub = t['sub']
+                        w = t['value']
+                        t['remaining'] -= 1
+                        r = t['remaining']
+
+                        myweights[sub] += w * (substitution_window - r) / substitution_window
+
+                        if sec:
+                            myweights[sec] = w * r / substitution_window
+
+                        if sec in cur_subs:
+                            cur_subs[sec]['remaining'] -= 1
+
+                        if r == 0:
+                            transitions.remove(t)
 
                     if mode == 'dumb':
                         z = len(filter(lambda x: x > 0, myweights)) / 30.0
@@ -182,8 +193,6 @@ def compute_score(mode=False):
 
                 vals = map(float, line.split(","))
                 index = index_prices[i-1]
-
-                #print np.sum(myweights / np.sum(myweights))
 
                 #myweights /= np.sum(myweights)
 
@@ -195,10 +204,12 @@ def compute_score(mode=False):
 
                 #if i == 100:
                 #    print myweights - last_weights
-                transaction_cost2 = -20 * np.sum(np.exp(np.abs(myweights - last_weights) / 20) - 1)
+                #transaction_cost = -20 * np.sum(np.exp(np.abs(myweights - last_weights) / 20) - 1)
                 transaction_cost = -1 * np.sum(np.exp(np.abs(myweights - last_weights)) - 1)
 
-                #transaction_cost = 0
+                # -1.54221453405
+                # -1.56937946812
+                #print transaction_cost - transaction_cost2
 
                 #if transaction_cost2 > transaction_cost:
                 #    raise Exception("FUCK")
@@ -267,5 +278,6 @@ axes[1].set_position([box.x0, box.y0, box.width * 0.8, box.height])
 axes[1].legend(H, L, loc='center left', bbox_to_anchor=(1, 0.5))
 
 print score[-1]
+print score[-1] + t_costs[-1]
 
 plt.show()
