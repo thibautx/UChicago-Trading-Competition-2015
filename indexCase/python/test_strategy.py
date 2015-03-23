@@ -12,7 +12,7 @@ from os import path
 
 ROUND = 1
 PLOT_BENCHMARK = True
-OFFSET = 7000
+OFFSET = 6000
 WINDOW_LENGTH = 1000
 
 ''' ------------------ '''
@@ -72,11 +72,12 @@ with open(weights_file) as f:
 
 with open(data_file) as f:
     for i, line in enumerate(f.readlines()):
-        if i >= start and i <= end:
-            vals = map(float, line.split(","))
-            for k, sec in enumerate(securities):
-                prices[sec].append(vals[sec])
-            index_prices.append(vals[-1])
+        if i == 0:
+            continue
+        vals = map(float, line.split(","))
+        for k, sec in enumerate(securities):
+            prices[sec].append(vals[sec])
+        index_prices.append(vals[-1])
 
 
 n = len(securities)
@@ -159,7 +160,7 @@ def compute_score(mode=False):
                         myweights = np.array(map(lambda x: 1/z if x > 0 else 0, myweights))
 
                 vals = map(float, line.split(","))
-                index = index_prices[i-1-offset]
+                index = index_prices[i-1]
                 est = np.dot(vals[:-1], myweights) / K
 
                 # at first tick adjust K so that the prices are alligned
