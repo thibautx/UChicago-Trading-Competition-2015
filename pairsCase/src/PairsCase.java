@@ -199,11 +199,15 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         if(pair.diff >= entry_threshold*pair.std && entry_threshold*pair.std>= 2.0*pair.spread[tick] && pair.momentum_mavg <= momentum_threshold){
             pair.entry_spread = pair.spread[tick];
             pair.position = "short";
+            orders[pair.index1].quantity = -positionLimit;
+            orders[pair.index2].quantity = positionLimit;
             log("tick " + tick+  "short spread at " + pair.entry_spread);
         }
         // we want to go long
         else if(-pair.diff >= entry_threshold*pair.std && entry_threshold*pair.std >= 2.0*pair.spread[tick] && pair.momentum_mavg >= momentum_threshold){
             pair.entry_spread = pair.spread[tick];
+            orders[pair.index1].quantity = positionLimit;
+            orders[pair.index2].quantity = -positionLimit;
             pair.position = "long";
             log("tick " + tick + "long spread at " + pair.entry_spread);
         }
@@ -212,12 +216,16 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         // we close the position for a profit
         if( pair.diff >= exit_threshold*pair.std && pair.momentum_mavg <= -momentum_threshold){
             pair.position = "cash";
+            orders[pair.index1].quantity = -positionLimit;
+            orders[pair.index2].quantity = positionLimit;
             n_win ++;
             log("tick " + tick + "close long spread at " + pair.spread[tick] +"profit of" + (pair.entry_spread-pair.spread[tick]));
         }
         // we close the trade for a loss
         else if(-pair.diff >= risk_threshold*pair.std){
             pair.position = "cash";
+            orders[pair.index1].quantity = -positionLimit;
+            orders[pair.index2].quantity = positionLimit;
             n_lose ++;
             log("tick " + tick + "close long spread at " + pair.spread[tick] +"loss of" +(pair.entry_spread-pair.spread[tick]));
 
@@ -227,11 +235,20 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         // we close the position for a gain
         if(pair.diff <= exit_threshold*pair.std && pair.momentum_mavg >= momentum_threshold){
             pair.position = "cash";
+            orders[pair.index1].quantity = positionLimit;
+            orders[pair.index2].quantity = -positionLimit;
+            n_win++;
+            log("tick " + tick + "close short spread at " + pair.spread[tick] +"profit of" + (pair.entry_spread-pair.spread[tick]));
 
         }
         // we close the position for a loss
         else if (-pair.diff >= risk_threshold*pair.std){
-            // @TODO
+            pair.position = "cash";
+            orders[pair.index1].quantity = positionLimit;
+            orders[pair.index2].quantity = -positionLimit;
+            n_lose++;
+            log("tick " + tick + "close short spread at " + pair.spread[tick] +"loss of" + (pair.entry_spread-pair.spread[tick]));
+
         }
     }
 
