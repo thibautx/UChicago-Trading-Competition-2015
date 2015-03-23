@@ -14,8 +14,8 @@ ROUND = 1
 PLOT_BENCHMARK = False
 OFFSET = 2000
 WINDOW_LENGTH = 1000
-BOOBS = 3.153402393209
-WEIGHT_LIMIT = 0.3
+BOOBS = 3.153402393209 / 1
+
 ''' ------------------ '''
 
 BASE_DIR = path.dirname(path.dirname(__file__))
@@ -131,29 +131,54 @@ def compute_score(mode=False):
                     for sec in securities:
 
                         Pc = np.copy(P)
+                        substitute = np.argmax(Pc[sec])
 
-                        sub_weight = np.inf
-
-                        while sub_weight > WEIGHT_LIMIT:
+                        while not cur_tradable[substitute]:
+                            Pc[sec, substitute] = 0
                             substitute = np.argmax(Pc[sec])
-                            while not cur_tradable[substitute]:
+                            if mode == 'random':
+                                if substitute != sec:
+                                    substitute = sec
+                                    while not cur_tradable[substitute]:
+                                        substitute = np.random.randint(0, high=30)
+
+                        sub_ind = np.argmax(last_substitutions[sec, :])
+
+                        if last_substitutions[sec, sub_ind] == 0:
+                            raise Exception("2 - No nonzero sub weight found for {}".format(sec))
+
+                        # k * p_sub * w_sub = p_lsub * w_sec_lsub
+                        sub_weight = last_substitutions[sec, sub_ind] * vals[sub_ind] / vals[substitute]
+
+                        if sub_weight > BOOBS:
+                            b = int(sub_weight / BOOBS) + 1
+
+                            for _ in xrange(0, b-1):
+                                sub_weight /= b
+                                sub_weight = 0
+                                myweights[substitute] += sub_weight
+                                substitutions[sec, substitute] = sub_weight
                                 Pc[sec, substitute] = 0
                                 substitute = np.argmax(Pc[sec])
-                                if mode == 'random':
-                                    if substitute != sec:
-                                        substitute = sec
-                                        while not cur_tradable[substitute]:
-                                            substitute = np.random.randint(0, high=30)
 
-                            sub_ind = np.argmax(last_substitutions[sec, :])
+                                while not cur_tradable[substitute]:
+                                    Pc[sec, substitute] = 0
+                                    substitute = np.argmax(Pc[sec])
+                                    if mode == 'random':
+                                        if substitute != sec:
+                                            substitute = sec
+                                            while not cur_tradable[substitute]:
+                                                substitute = np.random.randint(0, high=30)
 
-                            if last_substitutions[sec, sub_ind] == 0:
-                                raise Exception("2 - No nonzero sub weight found for {}".format(sec))
+                                sub_ind = np.argmax(last_substitutions[sec, :])
 
-                            # k * p_sub * w_sub = p_lsub * w_sec_lsub
-                            sub_weight = last_substitutions[sec, sub_ind] * vals[sub_ind] / vals[substitute]
+                                if last_substitutions[sec, sub_ind] == 0:
+                                    raise Exception("2 - No nonzero sub weight found for {}".format(sec))
 
-                            Pc[sec, substitute] = 0
+                                # k * p_sub * w_sub = p_lsub * w_sec_lsub
+                                sub_weight = last_substitutions[sec, sub_ind] * vals[sub_ind] / vals[substitute]
+                                #sub_weight /= b
+
 
                         myweights[substitute] += sub_weight
                         substitutions[sec, substitute] = sub_weight
@@ -177,8 +202,11 @@ def compute_score(mode=False):
 
                 #if i == 100:
                 #    print myweights - last_weights
-                #transaction_cost = -20 * np.sum(np.exp(np.abs(myweights - last_weights) / 20) - 1)
+                transaction_cost2 = -20 * np.sum(np.exp(np.abs(myweights - last_weights) / 20) - 1)
                 transaction_cost = -1 * np.sum(np.exp(np.abs(myweights - last_weights)) - 1)
+
+                #if transaction_cost < transaction_cost2:
+                #    raise Exception("Fuck you")
 
                 t_cost_series.append(transaction_cost + t_cost_series[-1])
 
