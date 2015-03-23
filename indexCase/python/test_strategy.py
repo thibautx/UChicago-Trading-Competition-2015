@@ -183,7 +183,7 @@ def compute_score(mode=False):
     return index_s, est_s, score
 
 
-index_s, est_s, score = compute_score()
+index_s, est_s, score = compute_score(mode='normal')
 
 
 #ax = fig.add_subplot(2, 1, 1)
