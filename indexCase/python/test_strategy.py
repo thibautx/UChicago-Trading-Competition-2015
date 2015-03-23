@@ -12,7 +12,7 @@ from os import path
 
 ROUND = 1
 PLOT_BENCHMARK = False
-OFFSET = 0000
+OFFSET = 9000
 WINDOW_LENGTH = 1000
 
 ''' ------------------ '''
@@ -116,45 +116,45 @@ def compute_score(dumb_mode=False):
     with open(data_file) as f:
         for i, line in enumerate(f.readlines()):
 
-            # if we are at a tradable change, make adjustments
-            if i in tradable:
-                vals = map(float, line.split(","))
-                myweights = np.zeros(30)
-                cur_tradable = tradable[i]
-                substitutions = np.zeros((30, 30))
+            if i >= start and i <= end:
+                # if we are at a tradable change, make adjustments
+                if i in tradable:
+                    vals = map(float, line.split(","))
+                    myweights = np.zeros(30)
+                    cur_tradable = tradable[i]
+                    substitutions = np.zeros((30, 30))
 
-                for sec in securities:
+                    for sec in securities:
 
-                    Pc = np.copy(P)
-                    substitute = np.argmax(Pc[sec])
-
-                    while not cur_tradable[substitute]:
-                        Pc[sec, substitute] = 0
+                        Pc = np.copy(P)
                         substitute = np.argmax(Pc[sec])
 
-                    sub_ind = np.argmax(last_substitutions[sec, :])
+                        while not cur_tradable[substitute]:
+                            Pc[sec, substitute] = 0
+                            substitute = np.argmax(Pc[sec])
 
-                    if last_substitutions[sec, sub_ind] == 0:
-                        raise Exception("2 - No nonzero sub weight found for {}".format(sec))
+                        sub_ind = np.argmax(last_substitutions[sec, :])
 
-                    # k * p_sub * w_sub = p_lsub * w_sec_lsub
-                    sub_weight = last_substitutions[sec, sub_ind] * vals[sub_ind] / vals[substitute]
-                    myweights[substitute] += sub_weight
-                    substitutions[sec, substitute] = sub_weight
+                        if last_substitutions[sec, sub_ind] == 0:
+                            raise Exception("2 - No nonzero sub weight found for {}".format(sec))
 
-                    if substitutions[sec, substitute] == 0:
-                        raise Exception("4 - computed a zero sub_weight")
+                        # k * p_sub * w_sub = p_lsub * w_sec_lsub
+                        sub_weight = last_substitutions[sec, sub_ind] * vals[sub_ind] / vals[substitute]
+                        myweights[substitute] += sub_weight
+                        substitutions[sec, substitute] = sub_weight
 
-                    if sec != substitute:
-                        myweights[sec] = 0
+                        if substitutions[sec, substitute] == 0:
+                            raise Exception("4 - computed a zero sub_weight")
 
-                last_substitutions = np.copy(substitutions)
+                        if sec != substitute:
+                            myweights[sec] = 0
 
-                if dumb_mode:
-                    z = len(filter(lambda x: x > 0, myweights)) / 30.0
-                    myweights = np.array(map(lambda x: 1/z if x > 0 else 0, myweights))
+                    last_substitutions = np.copy(substitutions)
 
-            if i >= start and i <= end:
+                    if dumb_mode:
+                        z = len(filter(lambda x: x > 0, myweights)) / 30.0
+                        myweights = np.array(map(lambda x: 1/z if x > 0 else 0, myweights))
+
                 vals = map(float, line.split(","))
                 index = index_prices[i-1-offset]
                 est = np.dot(vals[:-1], myweights) / K
