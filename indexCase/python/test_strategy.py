@@ -10,22 +10,19 @@ from os import path
 
 
 '''
--0.0124155925156
--1.20398805627
-
--0.0121671885588
--1.23609803309
-
+-0.0280919490707
+-0.614186277708
 '''
 
 ''' --- parameters --- '''
 ROUND = 1
-PLOT_BENCHMARK = True
+PLOT_BENCHMARK = False
 OFFSET = 0000
 WINDOW_LENGTH = 10000
-WEIGHT_LIMIT = 0.1
 substitution_window = 20
-buyback_window = 20
+buyback_window = 1
+NO_T_COSTS = True
+NO_BUYBACK = False
 ''' ------------------ '''
 
 BASE_DIR = path.dirname(path.dirname(__file__))
@@ -154,8 +151,6 @@ def compute_score(mode=False):
                     if lcur_tradable and i > start and i <= end:
                         for sec in lcur_tradable:
                             if not lcur_tradable[sec] and last_weights[sec] > 1e-10:
-                                if sec == -1:
-                                    print "huh"
                                 print i, sec, last_weights[sec]
                                 #raise Exception("Penalty")
 
@@ -194,7 +189,7 @@ def compute_score(mode=False):
                             }
                         elif sec == substitute:
                             sub = cur_subs[sec]['sub']
-                            if sub != sec:
+                            if sub != sec and not NO_BUYBACK:
                                 sub_w = weights[sec] / buyback_window
                                 t = {'sec': sub, 'sub': sec, 'remaining': buyback_window, 'value': sub_w}
                                 transitions.append(t)
@@ -230,9 +225,11 @@ def compute_score(mode=False):
                 vals = map(float, line.split(","))
                 index = index_prices[i-1]
 
-                #myweights /= np.sum(myweights)
+                #print len([1 for c in cur_tradable if cur_tradable[c] == True])
+                #print np.sum(myweights)
 
                 #est = np.dot(vals[:-1], myweights)
+                #myweights = [0.0001]*30
                 last_est = np.dot(last_vals[:-1], myweights)
                 est = np.dot(vals[:-1], myweights)
                 ret = est - last_est
@@ -241,8 +238,10 @@ def compute_score(mode=False):
                 #if i == 100:
                 #    print myweights - last_weights
                 #transaction_cost = -20 * np.sum(np.exp(np.abs(myweights - last_weights) / 20) - 1)
-                transaction_cost = -1 * np.sum(np.exp(np.abs(myweights - last_weights)) - 1)
-
+                X = 1
+                transaction_cost = -1 * np.sum(np.exp(np.abs(myweights - last_weights) / X) - 1) * X
+                if NO_T_COSTS:
+                    transaction_cost = 0
                 #print transaction_cost - transaction_cost2
 
                 #if transaction_cost2 > transaction_cost:
@@ -285,6 +284,9 @@ def compute_score(mode=False):
 
 index_s, est_s, score, t_costs = compute_score(mode='normal')
 
+print score[-1]
+print score[-1] + t_costs[-1]
+
 #ax = fig.add_subplot(2, 1, 1)
 fig, axes = plt.subplots(nrows=2)
 
@@ -311,8 +313,5 @@ axes[0].legend([h1, h2], ['index', 'portfolio'], loc='center left', bbox_to_anch
 box = axes[1].get_position()
 axes[1].set_position([box.x0, box.y0, box.width * 0.8, box.height])
 axes[1].legend(H, L, loc='center left', bbox_to_anchor=(1, 0.5))
-
-print score[-1]
-print score[-1] + t_costs[-1]
 
 plt.show()
