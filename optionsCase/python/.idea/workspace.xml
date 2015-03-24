@@ -60,8 +60,8 @@
       <file leaf-file-name="test_strategy.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../../indexCase/python/test_strategy.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.38922155" vertical-offset="2066" max-vertical-offset="5491">
-              <caret line="133" column="30" selection-start-line="133" selection-start-column="30" selection-end-line="133" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.6666667" vertical-offset="125" max-vertical-offset="5457">
+              <caret line="27" column="19" selection-start-line="27" selection-start-column="19" selection-end-line="27" selection-end-column="19" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -969,8 +969,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../indexCase/python/test_strategy.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38922155" vertical-offset="2066" max-vertical-offset="5491">
-          <caret line="133" column="30" selection-start-line="133" selection-start-column="30" selection-end-line="133" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.6666667" vertical-offset="125" max-vertical-offset="5457">
+          <caret line="27" column="19" selection-start-line="27" selection-start-column="19" selection-end-line="27" selection-end-column="19" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>

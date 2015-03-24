@@ -10,14 +10,11 @@ from os import path
 
 
 '''
--0.0115030130781
--1.84768635021
+-0.0124155925156
+-1.20398805627
 
--0.011912904981
--1.72780640678
-
--0.0207773220833
--1.33182011073
+-0.0121671885588
+-1.23609803309
 
 '''
 
@@ -28,6 +25,7 @@ OFFSET = 2000
 WINDOW_LENGTH = 1000
 WEIGHT_LIMIT = 0.1
 substitution_window = 20
+buyback_window = 20
 ''' ------------------ '''
 
 BASE_DIR = path.dirname(path.dirname(__file__))
@@ -195,12 +193,12 @@ def compute_score(mode=False):
                         elif sec == substitute:
                             sub = cur_subs[sec]['sub']
                             if sub != sec:
-                                w = weights[sec]
-                                t = {'sec': sub, 'sub': sec, 'remaining': 1, 'value': w}
+                                sub_w = weights[sec] / buyback_window
+                                t = {'sec': sub, 'sub': sec, 'remaining': buyback_window, 'value': sub_w}
                                 transitions.append(t)
                                 cur_subs[sec] = {
                                     'sub': sec,
-                                    'remaining': 1,
+                                    'remaining': buyback_window,
                                     'transaction': t
                                 }
 
