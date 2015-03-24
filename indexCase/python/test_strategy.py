@@ -9,14 +9,25 @@ from copy import deepcopy
 from os import path
 
 
-''' --- parameters --- '''
+'''
+-0.0115030130781
+-1.84768635021
 
+-0.011912904981
+-1.72780640678
+
+-0.0207773220833
+-1.33182011073
+
+'''
+
+''' --- parameters --- '''
 ROUND = 1
 PLOT_BENCHMARK = False
 OFFSET = 2000
 WINDOW_LENGTH = 1000
 WEIGHT_LIMIT = 0.1
-substitution_window = 1
+substitution_window = 20
 ''' ------------------ '''
 
 BASE_DIR = path.dirname(path.dirname(__file__))
@@ -60,9 +71,9 @@ with open(tradable_changes_file) as f:
         tick, sec, v = map(int, line.split(","))
         tradable[tick] = deepcopy(last_tradable)
         if v == 1:
-            tradable[tick][sec] = True
+            tradable[tick][sec-1] = True
         else:
-            tradable[tick][sec] = False
+            tradable[tick][sec-1] = False
         last_tradable = tradable[tick]
 
 with open(weights_file) as f:
@@ -119,13 +130,19 @@ def compute_score(mode=False):
 
     last_vals = None
     first_val = None
+    cur_tradable = None
+    lcur_tradable = tradable[1]
 
     transitions = []
-    cur_subs = {}
+    cur_subs = {s: {'sec': s, 'sub': s, 'remaining': 0, 'transaction': {}} for s in securities}
 
     with open(data_file) as f:
         for i, line in enumerate(f.readlines()):
             last_weights = np.copy(myweights)
+
+            if i in tradable:
+                cur_tradable = tradable[i]
+
             if i >= start and i <= end:
 
                 if not last_vals:
@@ -134,10 +151,19 @@ def compute_score(mode=False):
                     first_val = np.dot(weights, map(float, line.split(","))[:-1])
 
                 # if we are at a tradable change, make adjustments
-                if i in tradable:
+                if i in tradable or i == start:
+
+                    if lcur_tradable and i > start and i <= end:
+                        for sec in lcur_tradable:
+                            if not lcur_tradable[sec] and last_weights[sec] > 1e-10:
+                                print i, sec, last_weights[sec]
+                                #raise Exception("Penalty")
+
+                    lcur_tradable = cur_tradable
+
                     vals = map(float, line.split(","))
-                    cur_tradable = tradable[i]
-                    myweights = np.zeros(30)
+
+                    #myweights = np.zeros(30)
                     for sec in securities:
 
                         Pc = np.copy(P)
@@ -152,44 +178,54 @@ def compute_score(mode=False):
                                     while not cur_tradable[substitute]:
                                         substitute = np.random.randint(0, high=30)
 
-                        if sec != substitute:
+                        if sec != substitute and cur_subs[sec]['sub'] != substitute:
+                            sub_w = 1 if i == start else substitution_window
                             t = {
-                                    'sec': sec,
-                                    'sub': substitute,
-                                    'remaining': substitution_window,
-                                    'value': weights[sec] / substitution_window
+                                'sec': cur_subs[sec]['sub'],
+                                'sub': substitute,
+                                'remaining': sub_w,
+                                'value': weights[sec] / sub_w
                             }
                             transitions.append(t)
                             cur_subs[sec] = {
                                 'sub': substitute,
-                                'remaining': substitution_window,
+                                'remaining': sub_w,
                                 'transaction': t
                             }
-                        else:
-                            w = weights[sec]
-                            transitions.append({'sec': None, 'sub': sec, 'remaining': 1, 'value': w})
+                        elif sec == substitute:
+                            sub = cur_subs[sec]['sub']
+                            if sub != sec:
+                                w = weights[sec]
+                                t = {'sec': sub, 'sub': sec, 'remaining': 1, 'value': w}
+                                transitions.append(t)
+                                cur_subs[sec] = {
+                                    'sub': sec,
+                                    'remaining': 1,
+                                    'transaction': t
+                                }
 
-                    for t in np.copy(transitions):
-                        sec = t['sec']
-                        sub = t['sub']
-                        w = t['value']
-                        t['remaining'] -= 1
-                        r = t['remaining']
+                for t in np.copy(transitions):
+                    sec = t['sec']
+                    sub = t['sub']
+                    w = t['value']
+                    t['remaining'] -= 1
+                    r = t['remaining']
 
-                        myweights[sub] += w * (substitution_window - r) / substitution_window
+                    myweights[sub] += w
+                    myweights[sec] -= w
 
-                        if sec:
-                            myweights[sec] = w * r / substitution_window
+                    #if sec:
+                    #    myweights[sec] = w * r / substitution_window
 
-                        if sec in cur_subs:
-                            cur_subs[sec]['remaining'] -= 1
+                    if sec in cur_subs:
+                        cur_subs[sec]['remaining'] -= 1
 
-                        if r == 0:
-                            transitions.remove(t)
+                    if r == 0:
+                        transitions.remove(t)
 
-                    if mode == 'dumb':
-                        z = len(filter(lambda x: x > 0, myweights)) / 30.0
-                        myweights = np.array(map(lambda x: 1/z if x > 0 else 0, myweights))
+                if mode == 'dumb':
+                    z = len(filter(lambda x: x > 0, myweights)) / 30.0
+                    myweights = np.array(map(lambda x: 1/z if x > 0 else 0, myweights))
 
                 vals = map(float, line.split(","))
                 index = index_prices[i-1]
@@ -207,14 +243,13 @@ def compute_score(mode=False):
                 #transaction_cost = -20 * np.sum(np.exp(np.abs(myweights - last_weights) / 20) - 1)
                 transaction_cost = -1 * np.sum(np.exp(np.abs(myweights - last_weights)) - 1)
 
-                # -1.54221453405
-                # -1.56937946812
                 #print transaction_cost - transaction_cost2
 
                 #if transaction_cost2 > transaction_cost:
                 #    raise Exception("FUCK")
 
-                t_cost_series.append(transaction_cost + t_cost_series[-1])
+                if i > start:
+                    t_cost_series.append(transaction_cost + t_cost_series[-1])
 
                 # at first tick adjust K so that the prices are alligned
                 #if K == 1:
@@ -235,7 +270,7 @@ def compute_score(mode=False):
 
     returns_diff = index_returns - est_returns[1:]
 
-    score = [0, -returns_diff[0]**2]
+    score = [-returns_diff[0]**2]
 
     for rd in returns_diff[1:]:
         score.append(score[-1] - rd**2)
