@@ -20,9 +20,9 @@ from os import path
 
 ''' --- parameters --- '''
 ROUND = 1
-PLOT_BENCHMARK = False
-OFFSET = 2000
-WINDOW_LENGTH = 1000
+PLOT_BENCHMARK = True
+OFFSET = 0000
+WINDOW_LENGTH = 10000
 WEIGHT_LIMIT = 0.1
 substitution_window = 20
 buyback_window = 20
@@ -69,9 +69,9 @@ with open(tradable_changes_file) as f:
         tick, sec, v = map(int, line.split(","))
         tradable[tick] = deepcopy(last_tradable)
         if v == 1:
-            tradable[tick][sec-1] = True
+            tradable[tick][sec] = True
         else:
-            tradable[tick][sec-1] = False
+            tradable[tick][sec] = False
         last_tradable = tradable[tick]
 
 with open(weights_file) as f:
@@ -154,6 +154,8 @@ def compute_score(mode=False):
                     if lcur_tradable and i > start and i <= end:
                         for sec in lcur_tradable:
                             if not lcur_tradable[sec] and last_weights[sec] > 1e-10:
+                                if sec == -1:
+                                    print "huh"
                                 print i, sec, last_weights[sec]
                                 #raise Exception("Penalty")
 
