@@ -11,15 +11,17 @@ from os import path
 
 '''
 
+
+
 '''
 
 ''' --- parameters --- '''
-ROUND = 1
+ROUND = 3
 PLOT_BENCHMARK = False
 OFFSET = 0000
 WINDOW_LENGTH = 10000
-substitution_window = 5     # tuned: round 1 - 5, round 2 - ?, round 3 - ?
-buyback_window = 1          
+substitution_window = 6     # tuned: round 1 - 5, round 2 - 7, round 3 - ?
+buyback_window = 1
 NO_T_COSTS = False
 NO_BUYBACK = False
 ''' ------------------ '''
@@ -165,7 +167,7 @@ def compute_score(mode=False):
 
                         substitute = np.argmax(Pc[sec])
                         while not cur_tradable[substitute]:
-                            Pc[sec, substitute] = 0
+                            Pc[sec, substitute] = -np.inf
                             substitute = np.argmax(Pc[sec])
                             if mode == 'random':
                                 if substitute != sec:
@@ -228,7 +230,8 @@ def compute_score(mode=False):
                 index = index_prices[i-1]
 
                 #print len([1 for c in cur_tradable if cur_tradable[c] == True])
-                #print np.sum(myweights)
+                if abs(np.sum(myweights) - 1.0) > 1e-14:
+                    raise Exception("Weights don't sum to 1.0 go fuck yourself - got error {}".format(np.sum(myweights)-1.0))
 
                 #est = np.dot(vals[:-1], myweights)
                 #myweights = [0.0001]*30
