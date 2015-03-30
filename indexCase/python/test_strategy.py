@@ -17,13 +17,16 @@ from os import path
 
 ''' --- parameters --- '''
 ROUND = 3
-PLOT_BENCHMARK = False
+PLOT_BENCHMARK = True
 OFFSET = 0000
 WINDOW_LENGTH = 10000
-substitution_window = 6     # tuned: round 1 - 5, round 2 - 7, round 3 - ?
+substitution_window = 6  # tuned: round 1 - 5, round 2 - 7, round 3 - ?
 buyback_window = 1
+corr_window = 50
 NO_T_COSTS = False
 NO_BUYBACK = False
+RECOMPUTE_CORR = True
+REBALANCE_THRESHOLD = 0.1
 ''' ------------------ '''
 
 BASE_DIR = path.dirname(path.dirname(__file__))
@@ -65,7 +68,7 @@ with open(tradable_changes_file) as f:
     last_tradable = tradable[1]
     for line in f.readlines():
         tick, sec, v = map(int, line.split(","))
-        #tick += 20
+        # tick += 20
         tradable[tick] = deepcopy(last_tradable)
         if v == 1:
             tradable[tick][sec] = True
@@ -78,7 +81,6 @@ with open(weights_file) as f:
         weight = float(line)
         weights.append(weight)
 
-
 with open(data_file) as f:
     for i, line in enumerate(f.readlines()):
         if i == 0:
@@ -88,7 +90,6 @@ with open(data_file) as f:
             prices[sec].append(vals[sec])
         index_prices.append(vals[-1])
 
-
 n = len(securities)
 m = len(prices[0]) - 1
 R = np.zeros((n, m))
@@ -96,10 +97,8 @@ Y = np.zeros((n, m))
 for i, sec in enumerate(securities):
     R[i:] = np.diff(prices[sec]) / prices[sec][:-1]
 
-
 means = []
-stds = []   # hehe
-
+stds = []  # hehe
 
 for i, sec in enumerate(securities):
     R_mean = np.average(R[i, :])
@@ -108,12 +107,12 @@ for i, sec in enumerate(securities):
     stds.append(R_std)
     Y[i:] = (R[i, :] - R_mean) / R_std
 
-
 P = np.corrcoef(Y, Y)[:n, :n]
 
 
 # dumb_mode simply evenly distributes all the weights
-def compute_score(mode=False):
+def compute_score(mode=False, RECOMPUTE_CORR_=False):
+    global P
 
     K = 1
 
@@ -141,32 +140,38 @@ def compute_score(mode=False):
                 cur_tradable = tradable[i]
 
             if i >= start and i <= end:
-
+                #print i
                 if not last_vals:
                     last_vals = map(float, line.split(","))
                 if not first_val:
                     first_val = np.dot(weights, map(float, line.split(","))[:-1])
 
+                if (ROUND == 2 or ROUND == 3) and RECOMPUTE_CORR_ and i >= corr_window:
+                    P = np.corrcoef(Y[:, i - corr_window:i], Y[:, i - corr_window:i])[:n, :n]
+
                 # if we are at a tradable change, make adjustments
-                if i in tradable or i == start:
+                if i in tradable or i == start or ((ROUND == 2 or ROUND == 3) and RECOMPUTE_CORR_):
 
                     if lcur_tradable and i > start and i <= end:
                         for sec in lcur_tradable:
                             if not lcur_tradable[sec] and last_weights[sec] > 1e-10:
-                                print i, sec, last_weights[sec]
+                                pass
+                                # print i, sec, last_weights[sec]
                                 #raise Exception("Penalty")
 
                     lcur_tradable = cur_tradable
 
                     vals = map(float, line.split(","))
 
-                    #myweights = np.zeros(30)
+                    # myweights = np.zeros(30)
                     for sec in securities:
 
                         Pc = np.copy(P)
 
                         substitute = np.argmax(Pc[sec])
-                        while not cur_tradable[substitute]:
+
+                        while (not cur_tradable[substitute]) or \
+                                (not cur_subs[sec]['sub'] == substitute and abs(Pc[sec, substitute] - Pc[sec, cur_subs[sec]['sub']]) < REBALANCE_THRESHOLD):
                             Pc[sec, substitute] = -np.inf
                             substitute = np.argmax(Pc[sec])
                             if mode == 'random':
@@ -213,7 +218,7 @@ def compute_score(mode=False):
                         myweights[sub] += w
                         myweights[sec] -= w
 
-                    #if sec:
+                    # if sec:
                     #    myweights[sec] = w * r / substitution_window
 
                     if sec in cur_subs:
@@ -224,14 +229,15 @@ def compute_score(mode=False):
 
                 if mode == 'dumb':
                     z = len(filter(lambda x: x > 0, myweights)) / 30.0
-                    myweights = np.array(map(lambda x: 1/z if x > 0 else 0, myweights))
+                    myweights = np.array(map(lambda x: 1 / z if x > 0 else 0, myweights))
 
                 vals = map(float, line.split(","))
-                index = index_prices[i-1]
+                index = index_prices[i - 1]
 
-                #print len([1 for c in cur_tradable if cur_tradable[c] == True])
-                if abs(np.sum(myweights) - 1.0) > 1e-14:
-                    raise Exception("Weights don't sum to 1.0 go fuck yourself - got error {}".format(np.sum(myweights)-1.0))
+                # print len([1 for c in cur_tradable if cur_tradable[c] == True])
+                if abs(np.sum(myweights) - 1.0) > 1e-10:
+                    raise Exception(
+                        "Weights don't sum to 1.0 go fuck yourself - got error {}".format(np.sum(myweights) - 1.0))
 
                 #est = np.dot(vals[:-1], myweights)
                 #myweights = [0.0001]*30
@@ -265,19 +271,18 @@ def compute_score(mode=False):
 
                 last_vals = vals
 
-
     index_returns = np.array(map(np.log, np.divide(index_s[1:], index_s[:-1])))
-    #est_returns = np.array(map(np.log, np.divide(est_s[1:], est_s[:-1])))
+    # est_returns = np.array(map(np.log, np.divide(est_s[1:], est_s[:-1])))
     est_returns = np.array(map(np.log, est_s))
 
     #print est_returns
 
     returns_diff = index_returns - est_returns[1:]
 
-    score = [-returns_diff[0]**2]
+    score = [-returns_diff[0] ** 2]
 
     for rd in returns_diff[1:]:
-        score.append(score[-1] - rd**2)
+        score.append(score[-1] - rd ** 2)
 
     portfolio_s = [first_val]
 
@@ -287,13 +292,13 @@ def compute_score(mode=False):
     return np.array(index_s), np.array(portfolio_s), np.array(score), np.array(t_cost_series[1:])
 
 
-index_s, est_s, score, t_costs = compute_score(mode='normal')
+index_s, est_s, score, t_costs = compute_score(mode='normal', RECOMPUTE_CORR_=RECOMPUTE_CORR)
 
 print score[-1]
 print t_costs[-1]
 print score[-1] + t_costs[-1]
 
-#ax = fig.add_subplot(2, 1, 1)
+# ax = fig.add_subplot(2, 1, 1)
 fig, axes = plt.subplots(nrows=2)
 
 h1, = axes[0].plot(index_s)
@@ -301,15 +306,18 @@ h2, = axes[0].plot(est_s)
 
 h3, = axes[1].plot(score)
 h4, = axes[1].plot(t_costs)
-h5, = axes[1].plot(score+t_costs)
+h5, = axes[1].plot(score + t_costs)
 H = [h3, h4, h5]
 L = ["score", "t cost", "total"]
 
 if PLOT_BENCHMARK:
-    _, _, benchmark, t_costs = compute_score(mode='random')
-    h6, = axes[1].plot(benchmark+t_costs)
+    bscore, btcosts, benchmark, t_costs = compute_score(mode='normal', RECOMPUTE_CORR_=False)
+    h6, = axes[1].plot(benchmark + t_costs)
+    h7, = axes[1].plot(benchmark)
     H.append(h6)
     L.append("benchmark")
+    H.append(h7)
+    L.append("benchmark score")
 
 box = axes[0].get_position()
 axes[0].set_position([box.x0, box.y0, box.width * 0.8, box.height])

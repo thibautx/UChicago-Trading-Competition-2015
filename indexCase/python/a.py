@@ -17,11 +17,12 @@ from os import path
 '''
 
 ''' --- parameters --- '''
-Z = 100
-ROUND = 3
+Z = 50
+ZZ = 10*Z
+ROUND = 2
 PLOT_BENCHMARK = False
 OFFSET = 0000
-WINDOW_LENGTH = 10000
+WINDOW_LENGTH = 1000
 substitution_window = 6     # tuned: round 1 - 5, round 2 - 7, round 3 - ?
 buyback_window = 1
 NO_T_COSTS = False
@@ -111,23 +112,41 @@ for i, sec in enumerate(securities):
     Y[i:] = (R[i, :] - R_mean) / R_std
 
 
+def MovingAverage(a, n) :
+    ret = np.cumsum(a, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n
+
+def ExpMovingAverage(values, window):
+    weights = np.exp(np.linspace(-1., 0., window))
+    weights /= weights.sum()
+
+    # Here, we will just allow the default since it is an EMA
+    a =  np.convolve(values, weights)[:len(values)]
+    a[:window] = a[window]
+    return a #again, as a numpy array.
+
+
 c_series = []
 c2_series = []
+ma_series = []
 
-for i in xrange(0, 10000-10*Z):
+for i in xrange(OFFSET, WINDOW_LENGTH+OFFSET-10*Z):
     P = np.corrcoef(Y[:, i:i+Z], Y[:, i:i+Z])
-    ZZ = 10*Z
     P2 = np.corrcoef(Y[:, i:i+ZZ], Y[:, i:i+ZZ])
     c_series.append(P[0, 1])
     c2_series.append(P2[0, 1])
 
+#ma_series = np.concatenate([np.zeros(10), MovingAverage(c_series, 10)])
+ma_series = ExpMovingAverage(c_series, 10)
 
 fig = plt.figure()
 ax = fig.add_subplot(2, 1, 1)
 h1, = ax.plot(c_series)
 h2, = ax.plot(c2_series)
+h3, = ax.plot(ma_series)
 
-ax.legend([h1, h2], ['{}-tick corr'.format(Z), '{}-tick corr'.format(ZZ)])
+ax.legend([h1, h2, h3], ['{}-tick corr'.format(Z), '{}-tick corr'.format(ZZ), 'MA'])
 
 print securities
 
