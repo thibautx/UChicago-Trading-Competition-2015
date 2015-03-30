@@ -10,11 +10,6 @@ from os import path
 
 
 '''
--0.264532013155
--0.316062448999
-
--0.262428697362
--0.314763216674
 
 '''
 
@@ -23,8 +18,8 @@ ROUND = 1
 PLOT_BENCHMARK = False
 OFFSET = 0000
 WINDOW_LENGTH = 10000
-substitution_window = 1
-buyback_window = 1
+substitution_window = 5     # tuned: round 1 - 5, round 2 - ?, round 3 - ?
+buyback_window = 1          
 NO_T_COSTS = False
 NO_BUYBACK = False
 ''' ------------------ '''
@@ -68,6 +63,7 @@ with open(tradable_changes_file) as f:
     last_tradable = tradable[1]
     for line in f.readlines():
         tick, sec, v = map(int, line.split(","))
+        #tick += 20
         tradable[tick] = deepcopy(last_tradable)
         if v == 1:
             tradable[tick][sec] = True
@@ -291,6 +287,7 @@ def compute_score(mode=False):
 index_s, est_s, score, t_costs = compute_score(mode='normal')
 
 print score[-1]
+print t_costs[-1]
 print score[-1] + t_costs[-1]
 
 #ax = fig.add_subplot(2, 1, 1)
