@@ -3,9 +3,12 @@ import numpy as np
 from scipy.stats import norm
 from numpy.random import choice, normal
 import matplotlib.pyplot as plt
+from os import path
 
-case_file = open("case_data.csv", "w")
-vol_file = open("vol_data.txt", "w")
+ROOT_DIR = path.dirname(__file__)
+
+case_file = open(path.join(ROOT_DIR, "case_data.csv"), "w")
+vol_file = open(path.join(ROOT_DIR, "vol_data.txt"), "w")
 
 case_file.write("Direction,Strike,Price\n")
 

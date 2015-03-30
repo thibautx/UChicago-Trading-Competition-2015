@@ -1,26 +1,42 @@
 from sklearn.svm import SVC
+from sklearn.ensemble import AdaBoostClassifier
 import numpy as np
+import numpy.linalg as npla
 
+'''
+
+'''
+
+WRITE_COEFFS = False
+
+if WRITE_COEFFS:
+    coefs_file = open("svm-coeffs", 'w')
+
+line_count = 10000
+C = 1.0
 kernel = 'rbf'
 nfolds = 5
-gamma = 0.05
+gamma = 0.00
+filter_gamma = 0.00
 gamma_skew = 1
 alpha = 2
-beta = 5
-do_weights = False
-class_weights = {
-    -1: 1,
-    0: 1,
-    1: 1
-}
+beta = 10
+threshold = 0.2
+do_weights = True
+class_weights = {}
+
+if WRITE_COEFFS:
+    nfolds = 1
 
 print kernel
-print gamma
-print gamma_skew
+print C
+print threshold
+print filter_gamma
 print beta
 print do_weights
 
 training_file = open("training_file_1.0-2.0-0.9-0.04-0.0-0.9-5-3-3-0.0-100.txt", 'r')
+#training_file = open("training_file.txt", 'r')
 
 data = []
 scores = []
@@ -30,8 +46,11 @@ fnegatives = []
 positives = []
 neutrals = []
 negatives = []
+fuck_ups = []
 
-for line in training_file:
+for i, line in enumerate(training_file):
+    if i > line_count:
+        break
     l = map(float, line.split(","))
     l = l[10-beta:]
     data.append(l)
@@ -39,17 +58,15 @@ for line in training_file:
 labels = zip(*data)[-1]
 
 if do_weights:
-    pos_count = np.sum(map(lambda x: 1 if x > gamma else 0, labels))
-    neg_count = np.sum(map(lambda x: 1 if x < -gamma else 0, labels))
-    neu_count = len(labels) - pos_count - neg_count
-
-    class_weights[-1] = float(len(labels)) / pos_count
-    class_weights[0] = float(len(labels)) / neu_count
-    class_weights[1] = float(len(labels)) / neg_count
+    pos_count = np.sum(map(lambda x: 1 if x >= 0 else 0, labels))
+    neg_count = np.sum(map(lambda x: 1 if x < 0 else 0, labels))
+    class_weights[-1] = float(len(labels)) / neg_count
+    class_weights[1] = float(len(labels)) / pos_count
 
 print class_weights[-1]
-print class_weights[0]
 print class_weights[1]
+
+data = filter(lambda d: abs(d[-1]) > filter_gamma, data)
 
 k = len(data) / nfolds
 
@@ -67,14 +84,19 @@ def mapY(z):
         return 0
 
 
-mapY = lambda z: 1 if z > gamma else -1 if z < -gamma_skew*gamma else 0
-
+mapY = lambda z: 1 if z >= 0 else -1 if z < 0 else 0
+mapTestY = lambda z: 1 if z > gamma else -1 if z < -gamma else 0
 
 for c in xrange(0, nfolds):
     training_data = data[0:k*c] + data[k*(c+1):]
     test_data = data[k*c:k*(c+1)]
 
-    classifier = SVC(kernel=kernel, class_weight=class_weights)
+    if WRITE_COEFFS:
+        training_data = data
+        testing_data = data
+
+    classifier = SVC(kernel=kernel, class_weight=class_weights, probability=True)
+    #classifier = AdaBoostClassifier(base_estimator=classifier, n_estimators=5, learning_rate=1)
 
     X, y = zip(*zip(*training_data)[:-1]), zip(*training_data)[-1]
 
@@ -84,11 +106,16 @@ for c in xrange(0, nfolds):
 
     classifier.fit(X, Y)
 
+    if WRITE_COEFFS:
+        coefs_file.write(str(map(list, classifier.support_vectors_)) + "\n")
+        coefs_file.write(str(map(list, classifier.dual_coef_)) + "\n")
+        coefs_file.write(str(classifier.intercept_) + "\n")
+
     testX, testy = zip(*zip(*test_data)[:-1]), zip(*test_data)[-1]
 
     #testX = map(lambda x: np.concatenate([x, [np.average(x)]]), testX)
 
-    testY = map(mapY, testy)
+    testY = map(mapTestY, testy)
 
     #accuracy = classifier.score(testX, testY)
 
@@ -103,33 +130,40 @@ for c in xrange(0, nfolds):
     _positives = 0
     _negatives = 0
     _neutrals = 0
+    _fuck_ups = 0
     #correct_sign = 0
 
     for i, x in enumerate(testX):
-        y1 = classifier.predict(x)
+        #y1 = classifier.predict(x)
+        v1, = classifier.decision_function(x)
+        #print v1
         y2 = testY[i]
-        if y1 == y2:
+        if abs(v1) > threshold and np.sign(v1) == np.sign(y2) and np.sign(y2) != np.sign(x[-1]):
             correct += 1
-            if y1 == -1:
+            if np.sign(v1) == -1:
                 _negatives += 1
-            elif y1 == 0:
-                _neutrals += 1
-            elif y1 == 1:
+            elif np.sign(v1) == 1:
                 _positives += 1
-        elif y1 == -1:
-            false_negatives += 1
-        elif y1 == 0:
+        elif (np.sign(y2) == np.sign(x[-1]) and y2 == 0) or (abs(v1) <= threshold and y2 == 0):
+            _neutrals += 1
+        elif (np.sign(y2) == np.sign(x[-1])) or (abs(v1) <= threshold):
             false_neutrals += 1
-        elif y1 == 1:
+        elif np.sign(v1) == -1 and np.sign(y2) != np.sign(x[-1]):
+            false_negatives += 1
+        elif np.sign(v1) == 1 and np.sign(y2) != np.sign(x[-1]):
             false_positives += 1
+        if np.sign(v1) == -y2 and abs(v1) > threshold and np.sign(y2) != np.sign(x[-1]):
+            _fuck_ups += 1
 
-    scores.append(correct / float(len(testY)))
-    fpositives.append(false_positives / float(len(testY)))
-    fneutrals.append(false_neutrals / float(len(testY)))
-    fnegatives.append(false_negatives / float(len(testY)))
+    N = float(len(testY) - false_neutrals - _neutrals)
+    scores.append(correct / N)
+    fpositives.append(false_positives / N)
+    fneutrals.append(false_neutrals / N)
+    fnegatives.append(false_negatives / N)
     positives.append(_positives)
     neutrals.append(_neutrals)
     negatives.append(_negatives)
+    fuck_ups.append(_fuck_ups)
     #sign_scores.append(correct_sign / float(len(testY)))
     print scores[-1]
 
@@ -140,6 +174,7 @@ print np.average(fnegatives)
 print np.average(positives)
 print np.average(neutrals)
 print np.average(negatives)
+print np.average(fuck_ups)
 #print np.average(sign_scores)
 
 

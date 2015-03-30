@@ -10,8 +10,12 @@ from os import path
 
 
 '''
--0.0280919490707
--0.614186277708
+-0.264532013155
+-0.316062448999
+
+-0.262428697362
+-0.314763216674
+
 '''
 
 ''' --- parameters --- '''
@@ -19,9 +23,9 @@ ROUND = 1
 PLOT_BENCHMARK = False
 OFFSET = 0000
 WINDOW_LENGTH = 10000
-substitution_window = 20
+substitution_window = 1
 buyback_window = 1
-NO_T_COSTS = True
+NO_T_COSTS = False
 NO_BUYBACK = False
 ''' ------------------ '''
 
@@ -174,17 +178,18 @@ def compute_score(mode=False):
                                         substitute = np.random.randint(0, high=30)
 
                         if sec != substitute and cur_subs[sec]['sub'] != substitute:
-                            sub_w = 1 if i == start else substitution_window
+                            nadds = 1 if i == start else substitution_window
+                            rem = 1 if i == start else 20
                             t = {
                                 'sec': cur_subs[sec]['sub'],
                                 'sub': substitute,
-                                'remaining': sub_w,
-                                'value': weights[sec] / sub_w
+                                'remaining': rem,
+                                'value': weights[sec] / nadds
                             }
                             transitions.append(t)
                             cur_subs[sec] = {
                                 'sub': substitute,
-                                'remaining': sub_w,
+                                'remaining': rem,
                                 'transaction': t
                             }
                         elif sec == substitute:
@@ -206,8 +211,9 @@ def compute_score(mode=False):
                     t['remaining'] -= 1
                     r = t['remaining']
 
-                    myweights[sub] += w
-                    myweights[sec] -= w
+                    if r < substitution_window:
+                        myweights[sub] += w
+                        myweights[sec] -= w
 
                     #if sec:
                     #    myweights[sec] = w * r / substitution_window
@@ -239,7 +245,7 @@ def compute_score(mode=False):
                 #    print myweights - last_weights
                 #transaction_cost = -20 * np.sum(np.exp(np.abs(myweights - last_weights) / 20) - 1)
                 X = 1
-                transaction_cost = -1 * np.sum(np.exp(np.abs(myweights - last_weights) / X) - 1) * X
+                transaction_cost = -1 * np.sum(np.exp(np.abs(myweights - last_weights) / X) - 1) * X / 200.0
                 if NO_T_COSTS:
                     transaction_cost = 0
                 #print transaction_cost - transaction_cost2

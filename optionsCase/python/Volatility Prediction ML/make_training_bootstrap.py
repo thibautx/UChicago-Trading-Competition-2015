@@ -8,7 +8,7 @@ import itertools
 
 from pprint import PrettyPrinter
 
-SIMULATIONS = 100
+SIMULATIONS = 200
 
 alpha = 1.0
 xi = 2.0
