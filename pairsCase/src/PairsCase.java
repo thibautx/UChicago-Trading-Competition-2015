@@ -58,7 +58,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         std_window = 20;
         log("Initialized parameters");
         /* Initialize Data */
-        tick = 0; 
+        tick = -1; 
         prices = new double[5];
         foundPairs = false;
         pnl = 0;
@@ -87,9 +87,10 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
 
     @Override
     public Order[] getNewQuotes(Quote[] quotes) {
-        tick++; // update the tick
         log("Tick " + tick);
-        log("Stock 1 holdings: " + pair1.stock1holdings + "Stock 2 holdings: " + pair1.stock2holdings);
+        log("Current PnL " + pnl);
+        tick++; // update the tick
+        log("Current position is " + pair1.position + " Stock 1 holdings: " + pair1.stock1holdings + "Stock 2 holdings: " + pair1.stock2holdings);
         if (numSymbols == 2) {
             priceHuron = quotes[0].bid;
             priceSuperior = quotes[1].bid;
@@ -212,21 +213,33 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         // we want to go short
         if(pair.diff >= entry_threshold*pair.std && entry_threshold*pair.std>= 2.0*pair.spread[tick] && pair.momentum_mavg <= momentum_threshold){
             pair.entry_spread = pair.spread[tick];
-            pair.position = "short";
+            // Make the order
             orders[pair.index1].quantity = -positionLimit;
-            log("short " + -positionLimit +" of stock 1");
-            pair.stock1holdings = -positionLimit;
             orders[pair.index2].quantity = positionLimit;
+            // Update data
+            pair.position = "short";
+            pair.stock1holdings = -positionLimit;
             pair.stock2holdings = positionLimit;
-            log("tick " + tick+  " short spread at " + pair.entry_spread);
+            // Log info
+            log("Long " + -positionLimit + "of stock 1");
+            log("short " + positionLimit + " of stock 2");
+            log("tick " + tick+  " open short spread at " + pair.entry_spread);
         }
         // we want to go long
         else if(-pair.diff >= entry_threshold*pair.std && entry_threshold*pair.std >= 2.0*pair.spread[tick] && pair.momentum_mavg >= momentum_threshold){
             pair.entry_spread = pair.spread[tick];
+            
+            // Make the Order
             orders[pair.index1].quantity = positionLimit;
             orders[pair.index2].quantity = -positionLimit;
+            // Update data
+            pair.stock1holdings = positionLimit;
+            pair.stock2holdings = -positionLimit;
             pair.position = "long";
-            log("tick " + tick + " long spread at " + pair.entry_spread);
+            //Log Info
+            log("Long " + positionLimit + "of stock 1");
+            log("Short " + -positionLimit + " of stock 2");
+            log("tick " + tick + " open long spread at " + pair.entry_spread);
         }
     }
     private void checkLongExit(StockPair pair){
@@ -236,15 +249,20 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             orders[pair.index1].quantity = -positionLimit;
             orders[pair.index2].quantity = positionLimit;
             n_win ++;
-            log("tick " + tick + " close long spread at " + pair.spread[tick] +"profit of" + (pair.entry_spread-pair.spread[tick]));
+            double profit = pair.entry_spread-pair.spread[tick];
+            pnl += profit;
+            log("tick " + tick + " close long spread at " + pair.spread[tick] +" profit of" + profit);
         }
         // we close the trade for a loss
         else if(-pair.diff >= risk_threshold*pair.std){
             pair.position = "cash";
+            log("Positionlimit: " + positionLimit);
             orders[pair.index1].quantity = -positionLimit;
             orders[pair.index2].quantity = positionLimit;
             n_lose ++;
-            log("tick " + tick + " close long spread at " + pair.spread[tick] +"loss of" +(pair.entry_spread-pair.spread[tick]));
+            double loss = pair.entry_spread-pair.spread[tick];
+            pnl += loss;
+            log("tick " + tick + " close long spread at " + pair.spread[tick] +" loss of" + loss);
 
         }
     }
@@ -255,7 +273,9 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             orders[pair.index1].quantity = positionLimit;
             orders[pair.index2].quantity = -positionLimit;
             n_win++;
-            log("tick " + tick + " close short spread at " + pair.spread[tick] +"profit of" + (pair.entry_spread-pair.spread[tick]));
+            double profit = pair.entry_spread-pair.spread[tick];
+            pnl += profit;
+            log("tick " + tick + " close short spread at " + pair.spread[tick] +"profit of" + profit);
 
         }
         // we close the position for a loss
@@ -266,7 +286,9 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             orders[pair.index2].quantity = -positionLimit;
             pair.stock1holdings = -positionLimit;
             n_lose++;
-            log("tick " + tick + " close short spread at " + pair.spread[tick] +"loss of" + (pair.entry_spread-pair.spread[tick]));
+            double loss = pair.entry_spread-pair.spread[tick];
+            pnl += loss;
+            log("tick " + tick + " close short spread at " + pair.spread[tick] +"loss of" + loss);
 
         }
     }
