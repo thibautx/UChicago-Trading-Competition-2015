@@ -58,35 +58,14 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         std_window = 20;
         log("Initialized parameters");
         /* Initialize Data */
-        tick = 0;
+        tick = 0; 
         prices = new double[5];
         foundPairs = false;
         pnl = 0;
         n_win = 0;
         n_lose = 0;
-        log("Initialized data");
+        log("Initialized Data");
 
-        /* Intialize the Pairs */
-        log("There are " + numSymbols + " in this round.");
-        allPairs = new ArrayList<StockPair>();
-        if(numSymbols == 1){
-            positionLimit = 40/2;
-            pair1 = new StockPair(0, 1); // there is only one pair
-        }
-        else if(numSymbols == 3){
-            positionLimit = 30/2;
-            allPairs.add(new StockPair(0,1));
-            allPairs.add(new StockPair(0,2));
-            allPairs.add(new StockPair(1,2));
-        }
-        else if(numSymbols == 5){
-            positionLimit = 50/2; 
-            for(int i = 0; i < 5; i++){
-                for(int j = i+1; j <= 5; j++){
-                    allPairs.add(new StockPair(i, j));
-                }
-            }
-        }
         String strategy = getStringVar("Strategy");
         if (strategy.contains("one")) {
             // do strategy one
@@ -100,6 +79,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         for (Ticker s : symbols){
             rv = rv + s.name() + " ";
         }
+        initializePairs();
         log("The tickers available for this round is " + rv);
         //initiate Order[]
         orders = PairsUtils.initiateOrders(symbols);
@@ -108,6 +88,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     @Override
     public Order[] getNewQuotes(Quote[] quotes) {
         tick ++; // update the tick
+        log("Numsymbols = " + numSymbols);
         if (numSymbols == 2) {
             priceHuron = quotes[0].bid;
             priceSuperior = quotes[1].bid;
@@ -121,7 +102,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             priceMichigan = quotes[2].bid;
             updatePrices();
             return roundTwoStrategy(priceHuron, priceSuperior, priceMichigan);
-        } else{
+        } else {
             priceHuron = quotes[0].bid;
             priceSuperior = quotes[1].bid;
             priceMichigan = quotes[2].bid;
@@ -172,6 +153,30 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     @Override
     public PairsInterface getImplementation() {
         return this;
+    }
+
+    /* Intialize the Pairs Objects */
+    private void initializePairs(){
+        log("There are " + numSymbols + " in this round.");
+        allPairs = new ArrayList<StockPair>();
+        if(numSymbols == 1){
+            positionLimit = 20;
+            pair1 = new StockPair(0, 1); // there is only one pair
+        }
+        else if(numSymbols == 3){
+            positionLimit = 30;
+            allPairs.add(new StockPair(0,1));
+            allPairs.add(new StockPair(0,2));
+            allPairs.add(new StockPair(1,2));
+        }
+        else if(numSymbols == 5){
+            positionLimit = 25; 
+            for(int i = 0; i < 5; i++){
+                for(int j = i+1; j <= 5; j++){
+                    allPairs.add(new StockPair(i, j));
+                }
+            }
+        }
     }
     /* Signals */
     //@TODO: find the correlated pairs...return type?
