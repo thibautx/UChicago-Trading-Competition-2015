@@ -12,15 +12,15 @@ public class Main {
     final static boolean USE_REAL_VOL = false;
     static double alpha = 1.0;
     static double xi = 2.0;
-    static double ema_decay = 0.9;
+    static double ema_decay = 0.99;
     static double edge_estimate = 0.04;
     static double iota = 0.000;
-    static double beta = 0.0;
-    static double beta_decay = 0.9;
+    static double beta = 0.01;
+    static double beta_decay = 1.2; //0.9
     static int hit_weight = 5;
     static int miss_streak_weight = 3;
     static int miss_count_trigger = 3;
-    static int fucked_up_trigger = 100;
+    static int fucked_up_trigger = 5; //10
 
     static LinkedList<Double> vegaQueue = new LinkedList<Double>();
 
@@ -44,6 +44,7 @@ public class Main {
         mycase.initializeAlgo(alpha, xi, ema_decay, edge_estimate, iota, beta, beta_decay, hit_weight,miss_streak_weight, miss_count_trigger, fucked_up_trigger);
 
         File file = new File("C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\optionsCase\\python\\case_data.csv");
+        //File file = new File("C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\Sample Data\\Options Case\\case1SampleData.csv");
         File vol_file = new File("C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\optionsCase\\python\\vol_data.txt");
 
         BufferedReader br = new BufferedReader(new FileReader(file));
@@ -55,14 +56,22 @@ public class Main {
             String[] line_split = line.split(",");
             String vol_line = vol_br.readLine();
             double real_vol = Double.parseDouble(vol_line);
+            int direction = Integer.parseInt(line_split[0]);
+            int strike = Integer.parseInt(line_split[1]);
+            double price = Double.parseDouble(line_split[2]);
+            double iv_price;
+            if(direction == 1){
+                iv_price = price / 0.95;
+            } else {
+                iv_price = price / 1.05;
+            }
+            //double real_vol = mycase.impliedVolatility(iv_price, strike);
+            System.out.println("Real Vol = " + real_vol);
             if(USE_REAL_VOL) {
                 for (int x = 0; x < 20; x++) {
                     mycase.impliedVolEMA.average(real_vol);
                 }
             }
-            int direction = Integer.parseInt(line_split[0]);
-            int strike = Integer.parseInt(line_split[1]);
-            double price = Double.parseDouble(line_split[2]);
             System.out.println("Order: " + strike + "|" + price + "|" + direction + "|" + tick);
             QuoteList qlist = mycase.getCurrentQuotes();
             Quote q = null;

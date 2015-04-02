@@ -10,21 +10,25 @@ from pprint import PrettyPrinter
 
 PLOT = False
 
-total_runs = 20
+total_runs = 1000
 
 alpha = [1.0]
 xi = [2.0]
 ema_decay = [0.1]
 edge_estimate = [0.04]
-beta = [0.0]
-beta_decay = [0.4]
+beta = [0.00, 0.01]
+beta_decay = [0.9, 1.2]
 hit_weight = [5]
 miss_streak_weight = [3]
 miss_count_trigger = [3]
 iota = [0.0]
-fucked_up_trigger = [10, 100]
+fucked_up_trigger = [7, 10]
 
-# best is (1.3, 1.0, 0.1, 0.04, 0.0, 0.9, 3, 5, 3)
+
+#(1.0, 2.0, 0.1, 0.04, 0.01, 1.2, 5, 3, 3, 0.0, 7)
+#(1.0, 2.0, 0.1, 0.04, 0.01, 1.2, 5, 3, 3, 0.0, 10)
+#(1.0, 2.0, 0.1, 0.04, 0.01, 1.2, 5, 3, 3, 0.0, 7)
+#(1.0, 2.0, 0.1, 0.04, 0.01, 1.2, 5, 3, 3, 0.0, 7)
 '''
 alpha = [1.3]
 xi = [1.0]

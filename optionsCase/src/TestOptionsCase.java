@@ -34,17 +34,21 @@ public class TestOptionsCase {
     double cur_iota = 0;
     double iota;
 
+    double svm_threshold;
+
     double cash = 0;
 
     HashMap<Integer, Integer> positions = new HashMap<Integer, Integer>();
 
     public EMA impliedVolEMA;
 
+    public MySVM svm;
+
     /* parameters */
     double alpha, xi, beta, hit_weight, edge_estimate;
 
     double beta_decay_rate;
-    double min_beta = 0.01;
+    double min_beta = 0.00;
     double cur_beta;
     int beta_trigger = 8;
 
@@ -55,20 +59,23 @@ public class TestOptionsCase {
     int cur_miss_count = 0;
 
     int we_fucked_up_trigger = 100;
-    double fucked_beta = 0.2;
 
     double d_vol_cap = 0.25;
-    double max_beta_d_vol = 0.025;
+    double max_beta_d_vol = 0.05;
 
     EMA ticksPosVega = new EMA(0.5);
     EMA ticksNegVega = new EMA(0.5);
     int pos_vega_ticks = 0;
     int neg_vega_ticks = 0;
 
+    LinkedList<Double> last_vegas = new LinkedList<Double>();
+
+
     public void initializeAlgo(double alpha_, double xi_, double ema_decay_, double edge_estimate_, double iota_,
                                double beta_, double beta_decay_, int hit_weight_, int miss_streak_weight_, int miss_count_trigger_, int fucked_up_trigger_) {
 
         /* retrieve parameters */
+        svm_threshold = 0.4;
         alpha = alpha_;
         xi = xi_;
         edge_estimate = edge_estimate_;
@@ -81,6 +88,7 @@ public class TestOptionsCase {
         hit_weight = hit_weight_;
         we_fucked_up_trigger = fucked_up_trigger_;
         impliedVolEMA = new EMA(ema_decay_);
+        svm = new MySVM();
 
         /* add initial vol to EMA */
         impliedVolEMA.average(initialVol);
@@ -151,6 +159,13 @@ public class TestOptionsCase {
 
         double totalVegaRisk = getTotalVegaRisk();
 
+        last_vegas.add(totalVegaRisk);
+
+        if(last_vegas.size() > 10) {
+            last_vegas.poll();
+        }
+
+        /*
         if(totalVegaRisk > 0){
             ticksNegVega.average(neg_vega_ticks);
             pos_vega_ticks++;
@@ -161,6 +176,7 @@ public class TestOptionsCase {
             neg_vega_ticks++;
             pos_vega_ticks = 0;
         }
+        */
 
         System.out.println("PnL = " + getPnL());
         System.out.println("Vega = " +  + getTotalVegaRisk());
@@ -186,6 +202,28 @@ public class TestOptionsCase {
 
         double vega = getTotalVegaRisk();
 
+        if(cur_miss_count >= we_fucked_up_trigger && cur_miss_count % 2 == 0) {
+            double b = cur_miss_count * cur_beta / 10;
+            cur_beta = Math.max(min_beta, cur_beta * beta_decay_rate);
+            //double b = beta;
+            impliedVolEMA.average(impliedVolEMA.get() - 2*minAbs(vega * cur_beta, Math.signum(vega) * max_beta_d_vol));
+            //cur_miss_count = 0;
+        }
+        /*else if(cur_miss_count >= we_fucked_up_trigger){// && cur_miss_count >= we_fucked_up_trigger) {
+            if (last_vegas.size() == 10) {
+                //double r = svm.decision_function(last_vegas);
+                double r = 0.0;
+                if (Math.abs(r) >= svm_threshold) {
+                    impliedVolEMA.average(impliedVolEMA.get() - minAbs(Math.signum(vega) * beta, Math.signum(vega) * max_beta_d_vol));
+                }
+            }
+            //cur_beta = beta;
+            //cur_miss_count = 0;
+        }*/
+
+
+
+        /*
         if(cur_miss_count >= we_fucked_up_trigger){
             //cur_iota += iota;
             //cur_beta = beta;
@@ -197,15 +235,17 @@ public class TestOptionsCase {
             //    impliedVolEMA.average(impliedVolEMA.get() - minAbs(vega * fucked_beta, Math.signum(vega) * max_beta_d_vol));
             //}
         }
+        */
 
         if(-1 == last_vega_sign*vega){
             cur_beta = beta;
         }
 
+        /*
         double nvt = (1 + ticksNegVega.get() + neg_vega_ticks) / 2.0;
         double pvt = (1 + ticksPosVega.get() + pos_vega_ticks) / 2.0;
         double q = pvt / nvt;
-        System.out.println("q = " + q);
+
         if(q < 0.125){
             impliedVolEMA.average(impliedVolEMA.get() + minAbs(Math.abs(vega) * cur_beta, max_beta_d_vol));
             cur_beta = Math.max(min_beta, cur_beta * beta_decay_rate);
@@ -214,6 +254,7 @@ public class TestOptionsCase {
             impliedVolEMA.average(impliedVolEMA.get() - minAbs(Math.abs(vega) * cur_beta, max_beta_d_vol));
             cur_beta = Math.max(min_beta, cur_beta * beta_decay_rate);
         }
+        */
 
 
         //if(cur_miss_count >= beta_trigger) {
@@ -338,6 +379,28 @@ public class TestOptionsCase {
             } else {
                 return oldValue;
             }
+        }
+
+    }
+
+    public class MySVM {
+
+        double coeffs[] = {0.23572948910364977, 0.23714510770276465, -0.16767039617166235, 0.042165312527663645, 0.11825761632639198, 0.056537077798152868, 0.26660303482206321, 0.056556982921054759, 0.23220898965580855, -4.6403792420099501};
+        double intercept = -0.04951626;
+
+        double C = 1.0;
+        double gamma = 0.1;
+
+        private double K(double[] x1, LinkedList<Double> x2){
+            double norm = 0;
+            for(int i=0; i < x1.length; i++){
+                norm += x1[i] * x2.get(i);
+            }
+            return Math.sqrt(norm);
+        }
+
+        public double decision_function(LinkedList<Double> x){
+            return K(coeffs, x) - intercept;
         }
 
     }
