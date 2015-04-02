@@ -58,35 +58,14 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         std_window = 20;
         log("Initialized parameters");
         /* Initialize Data */
-        tick = 0;
+        tick = -1; 
         prices = new double[5];
         foundPairs = false;
         pnl = 0;
         n_win = 0;
         n_lose = 0;
-        log("Initialized data");
+        log("Initialized Data");
 
-        /* Intialize the Pairs */
-        log("There are " + numSymbols + " in this round.");
-        allPairs = new ArrayList<StockPair>();
-        if(numSymbols == 1){
-            positionLimit = 40/2;
-            pair1 = new StockPair(0, 1); // there is only one pair
-        }
-        else if(numSymbols == 3){
-            positionLimit = 30/2;
-            allPairs.add(new StockPair(0,1));
-            allPairs.add(new StockPair(0,2));
-            allPairs.add(new StockPair(1,2));
-        }
-        else if(numSymbols == 5){
-            positionLimit = 50/2; 
-            for(int i = 0; i < 5; i++){
-                for(int j = i+1; j <= 5; j++){
-                    allPairs.add(new StockPair(i, j));
-                }
-            }
-        }
         String strategy = getStringVar("Strategy");
         if (strategy.contains("one")) {
             // do strategy one
@@ -101,13 +80,17 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             rv = rv + s.name() + " ";
         }
         log("The tickers available for this round is " + rv);
+        initializePairs();
         //initiate Order[]
         orders = PairsUtils.initiateOrders(symbols);
     }
 
     @Override
     public Order[] getNewQuotes(Quote[] quotes) {
-        tick ++; // update the tick
+        log("Tick " + tick);
+        log("Current PnL " + pnl);
+        tick++; // update the tick
+        log("Current position is " + pair1.position + " Stock 1 holdings: " + pair1.stock1holdings + "Stock 2 holdings: " + pair1.stock2holdings);
         if (numSymbols == 2) {
             priceHuron = quotes[0].bid;
             priceSuperior = quotes[1].bid;
@@ -121,7 +104,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             priceMichigan = quotes[2].bid;
             updatePrices();
             return roundTwoStrategy(priceHuron, priceSuperior, priceMichigan);
-        } else{
+        } else {
             priceHuron = quotes[0].bid;
             priceSuperior = quotes[1].bid;
             priceMichigan = quotes[2].bid;
@@ -130,11 +113,14 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             updatePrices();
             return roundThreeStrategy(priceHuron, priceSuperior, priceMichigan, priceOntario, priceErie);
         }
+        
     }
 
     //helper function that implements a dummy strategy for round 1
     public Order[] roundOneStrategy (double priceHuron, double priceSuperior){
-        adjustPosition(pair1);
+        if(tick >= fast_mavg_window){
+            adjustPosition(pair1);
+        }
         return orders;
     }
     //helper function that implements a dummy strategy for round 2
@@ -173,6 +159,31 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     public PairsInterface getImplementation() {
         return this;
     }
+
+    /* Intialize the Pairs Objects */
+    private void initializePairs(){
+        log("There are " + numSymbols + " symbols in this round.");
+        allPairs = new ArrayList<StockPair>();
+        if(numSymbols == 2){
+            log("Round 1");
+            positionLimit = 20;
+            pair1 = new StockPair(0, 1); // there is only one pair
+        }
+        else if(numSymbols == 3){
+            positionLimit = 30;
+            allPairs.add(new StockPair(0,1));
+            allPairs.add(new StockPair(0,2));
+            allPairs.add(new StockPair(1,2));
+        }
+        else if(numSymbols == 5){
+            positionLimit = 25; 
+            for(int i = 0; i < 5; i++){
+                for(int j = i+1; j <= 5; j++){
+                    allPairs.add(new StockPair(i, j));
+                }
+            }
+        }
+    }
     /* Signals */
     //@TODO: find the correlated pairs...return type?
     private void findCorrelatedPairs(){
@@ -180,6 +191,10 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     }
 
     private void adjustPosition(StockPair pair){
+        /*
+        orders[pair.index1].quantity = 0;
+        orders[pair.index2].quantity = 0;
+        */
         if(pair.position == "cash"){
             // Look for entry
             checkCashEntry(pair);
@@ -196,20 +211,36 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     // @TODO: update the std
     private void checkCashEntry(StockPair pair){
         // we want to go short
+        log("spread" + pair.spread[tick] + "diff (spread-slow_mavg): " + pair.diff + "entry_threshold: " + entry_threshold + "std: " + pair.std + "momentum_mavg: " + pair.momentum_mavg + "momentum threshold: " + momentum_threshold);
         if(pair.diff >= entry_threshold*pair.std && entry_threshold*pair.std>= 2.0*pair.spread[tick] && pair.momentum_mavg <= momentum_threshold){
             pair.entry_spread = pair.spread[tick];
-            pair.position = "short";
+            // Make the order
             orders[pair.index1].quantity = -positionLimit;
             orders[pair.index2].quantity = positionLimit;
-            log("tick " + tick+  "short spread at " + pair.entry_spread);
+            // Update data
+            pair.position = "short";
+            pair.stock1holdings = -positionLimit;
+            pair.stock2holdings = positionLimit;
+            // Log info
+            log("Long " + -positionLimit + "of stock 1");
+            log("short " + positionLimit + " of stock 2");
+            log("tick " + tick+  " open short spread at " + pair.entry_spread);
         }
         // we want to go long
         else if(-pair.diff >= entry_threshold*pair.std && entry_threshold*pair.std >= 2.0*pair.spread[tick] && pair.momentum_mavg >= momentum_threshold){
             pair.entry_spread = pair.spread[tick];
+            
+            // Make the Order
             orders[pair.index1].quantity = positionLimit;
             orders[pair.index2].quantity = -positionLimit;
+            // Update data
+            pair.stock1holdings = positionLimit;
+            pair.stock2holdings = -positionLimit;
             pair.position = "long";
-            log("tick " + tick + "long spread at " + pair.entry_spread);
+            //Log Info
+            log("Long " + positionLimit + "of stock 1");
+            log("Short " + -positionLimit + " of stock 2");
+            log("tick " + tick + " open long spread at " + pair.entry_spread);
         }
     }
     private void checkLongExit(StockPair pair){
@@ -219,15 +250,20 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             orders[pair.index1].quantity = -positionLimit;
             orders[pair.index2].quantity = positionLimit;
             n_win ++;
-            log("tick " + tick + "close long spread at " + pair.spread[tick] +"profit of" + (pair.entry_spread-pair.spread[tick]));
+            double profit = pair.entry_spread-pair.spread[tick];
+            pnl += profit;
+            log("tick " + tick + " close long spread at " + pair.spread[tick] +" profit of" + profit);
         }
         // we close the trade for a loss
         else if(-pair.diff >= risk_threshold*pair.std){
             pair.position = "cash";
+            log("Positionlimit: " + positionLimit);
             orders[pair.index1].quantity = -positionLimit;
             orders[pair.index2].quantity = positionLimit;
             n_lose ++;
-            log("tick " + tick + "close long spread at " + pair.spread[tick] +"loss of" +(pair.entry_spread-pair.spread[tick]));
+            double loss = pair.entry_spread-pair.spread[tick];
+            pnl += loss;
+            log("tick " + tick + " close long spread at " + pair.spread[tick] +" loss of" + loss);
 
         }
     }
@@ -238,16 +274,22 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             orders[pair.index1].quantity = positionLimit;
             orders[pair.index2].quantity = -positionLimit;
             n_win++;
-            log("tick " + tick + "close short spread at " + pair.spread[tick] +"profit of" + (pair.entry_spread-pair.spread[tick]));
+            double profit = pair.entry_spread-pair.spread[tick];
+            pnl += profit;
+            log("tick " + tick + " close short spread at " + pair.spread[tick] +"profit of" + profit);
 
         }
         // we close the position for a loss
         else if (-pair.diff >= risk_threshold*pair.std){
             pair.position = "cash";
             orders[pair.index1].quantity = positionLimit;
+            pair.stock1holdings = positionLimit;
             orders[pair.index2].quantity = -positionLimit;
+            pair.stock1holdings = -positionLimit;
             n_lose++;
-            log("tick " + tick + "close short spread at " + pair.spread[tick] +"loss of" + (pair.entry_spread-pair.spread[tick]));
+            double loss = pair.entry_spread-pair.spread[tick];
+            pnl += loss;
+            log("tick " + tick + " close short spread at " + pair.spread[tick] +"loss of" + loss);
 
         }
     }
@@ -272,6 +314,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         }
     }
     private void updatePair(StockPair pair){
+        //log(prices[0] + " " + prices[1]);
         pair.price1 = prices[pair.index1];
         pair.price2 = prices[pair.index2];
         pair.spread[tick] = pair.price1 - pair.price2;
@@ -279,9 +322,8 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         pair.fast_mavg = movingAverage(pair, fast_mavg_window);
         pair.momentum_mavg = momentumMovingAverage(pair);
         pair.diff = pair.spread[tick] - pair.slow_mavg;
-        pair.std = standardDeviation(pair);
-        //@TODO: Update std of pair
-        pair.std = standardDeviation(pair);
+        pair.std = standardDeviation(pair); // check the std function
+
     }
 
     private double movingAverage(StockPair pair, int window){
@@ -303,7 +345,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
 
     private double momentumMovingAverage(StockPair pair){
         ArrayList<Double> derivs = new ArrayList<Double>();
-        for(int i = 0; i < momentum_mavg_window-1; i++){
+        for(int i = 0; i < momentum_mavg_window /*-1*/; i++){
             derivs.add(pair.spread[i+1]-pair.spread[i]);
         }
         if(tick <= momentum_mavg_window){
@@ -333,6 +375,8 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
 
     public class StockPair{
         String position;
+        int stock1holdings;
+        int stock2holdings;
         int index1;
         int index2;
         double price1;
@@ -348,8 +392,10 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         public StockPair(int index1, int index2){
             this.spread = new double[1000];
             this.position = "cash"; // starting position is cash
-            this.index2 = index1;
+            this.index1 = index1;
             this.index2 = index2;
+            stock1holdings = 0;
+            stock2holdings = 0;
         }
 
     }
