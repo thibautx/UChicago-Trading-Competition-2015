@@ -259,26 +259,25 @@ def graph(spread, mavgs, trades, pnlarray, threshold_series, positions):
 
 if __name__ == "__main__":
     #global pnl, entry_spread, curr_spread
-    #data = open("PairsRound1.csv", 'r')
-    data = open("PairsRound2.csv", 'r')
+    data = open("PairsRound1.csv", 'r')
+    #data = open("PairsRound2.csv", 'r')
     #data = open("case_data.csv", 'r')
     #data = open("case_data2.csv", 'r')
     #graphStocks(data)
 
 
     pnlarray = []
-<<<<<<< HEAD
+    '''
     thresholds = [1.0, 0.0, 20.0] # entry_threshold, exit_threshold, risk_threshold
     mavg_windows = [500, 10, 10] # [slow_mavg_window, fast_mavg_window, momentum_window]
     spread, mavgs = getData(data, mavg_windows)
-    pnl, trades = backtest(spread, mavgs, thresholds, pnlarray)
+    pnl, trades = backtest(spread, mavgs, thresholds, 20, pnlarray, mavg_windows)
     graph(spread, mavgs, trades, pnlarray)
-
-=======
+    '''
     thresholds = [1.0, 0.7]  # entry_threshold, exit_threshold
     order_qty = 3
     mavg_windows = [500, 20, 20, 100]  # [slow_mavg_window, fast_mavg_window, momentum_window]
-    spread, mavgs = getData(data, mavg_windows, stock1=1, stock2=2)
+    spread, mavgs = getData(data, mavg_windows, stock1=0, stock2=1)
     pnl, trades, threshold_series, positions = backtest(spread, mavgs, thresholds, order_qty, pnlarray, mavg_windows)
     graph(spread, mavgs, trades, pnlarray, threshold_series, positions)
 
@@ -288,7 +287,6 @@ if __name__ == "__main__":
     order_qty = 3
     mavg_windows = [500, 20, 20, 100] or 15 15? # [slow_mavg_window, fast_mavg_window, momentum_window, std_window]
     '''
->>>>>>> c563ecc896f4ff8f9042fd6765d8ae09a13b7f59
 
 
 

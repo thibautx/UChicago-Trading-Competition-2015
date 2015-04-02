@@ -315,7 +315,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         }
     }
     private void updatePair(StockPair pair){
-        //log(prices[0] + " " + prices[1]);
+        // After every tick, we update the data contained in the StockPair object
         pair.price1 = prices[pair.index1];
         pair.price2 = prices[pair.index2];
         pair.spread[tick] = pair.price1 - pair.price2;
@@ -383,7 +383,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         double price1;
         double price2;
         double entry_spread;
-        double[] spread; // the the spread of the pair
+        double[] spread; // timeseries of the spread
         /* Indicators */
         double diff;
         double slow_mavg;
