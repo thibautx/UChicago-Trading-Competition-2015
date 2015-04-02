@@ -212,7 +212,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     private void checkCashEntry(StockPair pair){
         // we want to go short
         log("spread" + pair.spread[tick] + "diff (spread-slow_mavg): " + pair.diff + "entry_threshold: " + entry_threshold + "std: " + pair.std + "momentum_mavg: " + pair.momentum_mavg + "momentum threshold: " + momentum_threshold);
-        if(pair.diff >= entry_threshold*pair.std && entry_threshold*pair.std>= 2.0*pair.spread[tick] && pair.momentum_mavg <= momentum_threshold){
+        if(pair.diff >= entry_threshold*pair.std && entry_threshold*pair.std >= 2.0*pair.spread[tick] && pair.momentum_mavg <= momentum_threshold){
             pair.entry_spread = pair.spread[tick];
             // Make the order
             orders[pair.index1].quantity = -positionLimit;
