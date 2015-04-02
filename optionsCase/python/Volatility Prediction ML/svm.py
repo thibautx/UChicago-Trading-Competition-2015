@@ -7,21 +7,21 @@ import numpy.linalg as npla
 
 '''
 
-WRITE_COEFFS = False
+WRITE_COEFFS = True
 
 if WRITE_COEFFS:
     coefs_file = open("svm-coeffs", 'w')
 
-line_count = 10000
+line_count = 5000
 C = 1.0
-kernel = 'rbf'
+kernel = 'linear'
 nfolds = 5
 gamma = 0.00
 filter_gamma = 0.00
 gamma_skew = 1
 alpha = 2
 beta = 10
-threshold = 0.2
+threshold = 0.4
 do_weights = True
 class_weights = {}
 
@@ -68,7 +68,7 @@ print class_weights[1]
 
 data = filter(lambda d: abs(d[-1]) > filter_gamma, data)
 
-k = len(data) / nfolds
+k = line_count / nfolds
 
 
 def mapY(z):
@@ -108,7 +108,7 @@ for c in xrange(0, nfolds):
 
     if WRITE_COEFFS:
         coefs_file.write(str(map(list, classifier.support_vectors_)) + "\n")
-        coefs_file.write(str(map(list, classifier.dual_coef_)) + "\n")
+        coefs_file.write(str(map(list, classifier.coef_)) + "\n")
         coefs_file.write(str(classifier.intercept_) + "\n")
 
     testX, testy = zip(*zip(*test_data)[:-1]), zip(*test_data)[-1]

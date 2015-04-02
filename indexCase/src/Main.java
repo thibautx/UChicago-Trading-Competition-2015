@@ -11,10 +11,10 @@ public class Main {
 
     static boolean[] tradables = new boolean[30];
     static double[] weights = new double[30];
+    static double[] last_weights = new double[30];
     static double[] stock_values = new double[30];
     static double index_value;
     static double last_index_value;
-    static double last_portfolio_value = 0;
     static double k = 1;
 
     static RegulationTuple nextAnnouncement = null;
@@ -56,6 +56,11 @@ public class Main {
     private static double computeTickScore(){
 
         double portfolio_value = 0;
+        double last_portfolio_value = 0;
+
+        for(int i = 0; i < 30; i++){
+            last_portfolio_value += k*last_weights[i]*stock_values[i];
+        }
 
         for(int i = 0; i < 30; i++){
             portfolio_value += k*weights[i]*stock_values[i];
@@ -64,14 +69,12 @@ public class Main {
         double log_p_val = Math.log(portfolio_value / last_portfolio_value);
         double log_i_val = Math.log(index_value / last_index_value);
 
-        last_portfolio_value = portfolio_value;
-
         double difference = log_p_val - log_i_val;
 
         return difference*difference;
     }
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String args[]) throws Exception {
 
         double[] myweights;
         double score = 0;
@@ -93,9 +96,7 @@ public class Main {
 
         /* set initial last_portfolio_value and last_index_value */
         last_index_value = index_value;
-        for(int i = 0; i < 30; i++){
-            last_portfolio_value += k*weights[i]*stock_values[i];
-        }
+        last_weights = weights;
 
         /* call initial position */
         myweights = mycase.initalizePosition(stock_values, index_value, weights, tradables);
@@ -136,10 +137,24 @@ public class Main {
             updatePrices(line_split);
             double[] new_weights = mycase.updatePosition(tick, stock_values, index_value);
 
+            /* check that weights sum to 1 */
+            double check_sum = 0;
+            for(int i = 0; i < 30; i++){
+                check_sum += new_weights[i];
+            }
+
+            if(Math.abs(check_sum - 1.0) > 1e-10){
+                System.out.println("Weights don't sum to 1.0 +- 1e-10");
+                throw new Exception();
+            }
+
+
             /* compute transcation costs */
             for(int i = 0; i < 30; i++){
-                score -= (Math.exp(Math.abs(weights[i] - new_weights[i])) - 1);
+                score -= (Math.exp(Math.abs(weights[i] - new_weights[i])) - 1) / 200.0;
             }
+
+            last_weights = weights;
 
             weights = new_weights;
 

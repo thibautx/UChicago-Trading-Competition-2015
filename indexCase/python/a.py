@@ -17,12 +17,12 @@ from os import path
 '''
 
 ''' --- parameters --- '''
-Z = 50
+Z = 200
 ZZ = 10*Z
-ROUND = 2
+ROUND = 3
 PLOT_BENCHMARK = False
 OFFSET = 0000
-WINDOW_LENGTH = 1000
+WINDOW_LENGTH = 10000
 substitution_window = 6     # tuned: round 1 - 5, round 2 - 7, round 3 - ?
 buyback_window = 1
 NO_T_COSTS = False

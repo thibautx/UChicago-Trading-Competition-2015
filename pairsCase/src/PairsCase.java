@@ -137,6 +137,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         if(!foundPairs){
             return orders;
         }
+        //TODO - what if only one pair was found, not the second yet?
         adjustPosition(pair1);
         adjustPosition(pair2);
         return orders;

@@ -9,24 +9,24 @@ from copy import deepcopy
 from os import path
 
 
-'''
+import time
 
 
-
-'''
+t1 = time.time()
 
 ''' --- parameters --- '''
 ROUND = 3
 PLOT_BENCHMARK = True
 OFFSET = 0000
 WINDOW_LENGTH = 10000
-substitution_window = 6  # tuned: round 1 - 5, round 2 - 7, round 3 - ?
+substitution_window = 14  # tuned: round 1 - 5, round 2 - 7, round 3 - 15
 buyback_window = 1
-corr_window = 50
+corr_window = 100
 NO_T_COSTS = False
 NO_BUYBACK = False
-RECOMPUTE_CORR = True
-REBALANCE_THRESHOLD = 0.1
+RECOMPUTE_CORR = False
+#RECOMPUTE_CORR = True
+REBALANCE_THRESHOLD = 0.3
 ''' ------------------ '''
 
 BASE_DIR = path.dirname(path.dirname(__file__))
@@ -107,12 +107,12 @@ for i, sec in enumerate(securities):
     stds.append(R_std)
     Y[i:] = (R[i, :] - R_mean) / R_std
 
-P = np.corrcoef(Y, Y)[:n, :n]
+
 
 
 # dumb_mode simply evenly distributes all the weights
 def compute_score(mode=False, RECOMPUTE_CORR_=False):
-    global P
+    P = np.corrcoef(Y, Y)[:n, :n]
 
     K = 1
 
@@ -146,24 +146,23 @@ def compute_score(mode=False, RECOMPUTE_CORR_=False):
                 if not first_val:
                     first_val = np.dot(weights, map(float, line.split(","))[:-1])
 
-                if (ROUND == 2 or ROUND == 3) and RECOMPUTE_CORR_ and i >= corr_window:
+                if RECOMPUTE_CORR_ and i >= corr_window:
                     P = np.corrcoef(Y[:, i - corr_window:i], Y[:, i - corr_window:i])[:n, :n]
 
                 # if we are at a tradable change, make adjustments
-                if i in tradable or i == start or ((ROUND == 2 or ROUND == 3) and RECOMPUTE_CORR_):
+                if i in tradable or i == start or RECOMPUTE_CORR_:
 
                     if lcur_tradable and i > start and i <= end:
                         for sec in lcur_tradable:
                             if not lcur_tradable[sec] and last_weights[sec] > 1e-10:
                                 pass
-                                # print i, sec, last_weights[sec]
+                                #print i, sec, last_weights[sec]
                                 #raise Exception("Penalty")
 
                     lcur_tradable = cur_tradable
 
                     vals = map(float, line.split(","))
 
-                    # myweights = np.zeros(30)
                     for sec in securities:
 
                         Pc = np.copy(P)
@@ -171,7 +170,10 @@ def compute_score(mode=False, RECOMPUTE_CORR_=False):
                         substitute = np.argmax(Pc[sec])
 
                         while (not cur_tradable[substitute]) or \
-                                (not cur_subs[sec]['sub'] == substitute and abs(Pc[sec, substitute] - Pc[sec, cur_subs[sec]['sub']]) < REBALANCE_THRESHOLD):
+                                (RECOMPUTE_CORR_ and cur_tradable[cur_subs[sec]['sub']] and \
+                                 not cur_subs[sec]['sub'] == substitute and \
+                                 Pc[sec, cur_subs[sec]['sub']] < 0 and \
+                                 Pc[sec, substitute] - Pc[sec, cur_subs[sec]['sub']] < REBALANCE_THRESHOLD):
                             Pc[sec, substitute] = -np.inf
                             substitute = np.argmax(Pc[sec])
                             if mode == 'random':
@@ -291,7 +293,6 @@ def compute_score(mode=False, RECOMPUTE_CORR_=False):
 
     return np.array(index_s), np.array(portfolio_s), np.array(score), np.array(t_cost_series[1:])
 
-
 index_s, est_s, score, t_costs = compute_score(mode='normal', RECOMPUTE_CORR_=RECOMPUTE_CORR)
 
 print score[-1]
@@ -327,5 +328,9 @@ axes[0].legend([h1, h2], ['index', 'portfolio'], loc='center left', bbox_to_anch
 box = axes[1].get_position()
 axes[1].set_position([box.x0, box.y0, box.width * 0.8, box.height])
 axes[1].legend(H, L, loc='center left', bbox_to_anchor=(1, 0.5))
+
+t2 = time.time()
+
+print "Took {} seconds".format(t2-t1)
 
 plt.show()
