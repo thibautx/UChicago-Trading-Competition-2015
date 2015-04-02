@@ -16,11 +16,11 @@ public class Main {
     static double edge_estimate = 0.04;
     static double iota = 0.000;
     static double beta = 0.01;
-    static double beta_decay = 1.2; //0.9
+    static double beta_decay = 1.2; //1.2
     static int hit_weight = 5;
     static int miss_streak_weight = 3;
     static int miss_count_trigger = 3;
-    static int fucked_up_trigger = 5; //10
+    static int fucked_up_trigger = 7; //7
 
     static LinkedList<Double> vegaQueue = new LinkedList<Double>();
 

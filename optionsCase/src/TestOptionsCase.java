@@ -61,7 +61,7 @@ public class TestOptionsCase {
     int we_fucked_up_trigger = 100;
 
     double d_vol_cap = 0.25;
-    double max_beta_d_vol = 0.05;
+    double max_beta_d_vol = 0.015;
 
     EMA ticksPosVega = new EMA(0.5);
     EMA ticksNegVega = new EMA(0.5);

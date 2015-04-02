@@ -5,20 +5,26 @@ from numpy.random import choice, normal
 from random import sample
 import matplotlib.pyplot as plt
 
-case_file = open("case_data.csv", "w")
+case_file = open("case_data2.csv", "w")
 
 
 '''START PARAMETERS'''
 ticks = 1000
-number_of_securities = 3
+number_of_securities = 2
 number_of_pairs = 1
 
+#0.686501860329
+#1.9372736549
+
+#0.00583374056882 0.000181940277866
+#0.0163198571397 0.000298698851041
+
 # GMB parameters if security is not in a pair, noise parameters if it is a pair
-volatility = [0.02, 0.02, 0.02]
+volatility = [0.00583374056882, 0.0163198571397, 0.02]
 drift = [0, 0, 0]
 
 # cointegration gamma, controls how strong each pair is cointegrated, should be between 0 and 1, recommend between 0.001 and 0.2
-gamma = [0.015]
+gamma = [0.005]
 
 # cointegrating vectors
 alpha = [(1.0, -1.0), (1.0, -1.0)]

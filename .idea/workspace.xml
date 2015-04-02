@@ -28,16 +28,10 @@
       <file leaf-file-name="TestOptionsCase.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/optionsCase/src/TestOptionsCase.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3366" max-vertical-offset="6987">
-              <caret line="199" column="40" selection-start-line="199" selection-start-column="40" selection-end-line="199" selection-end-column="40" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="867" max-vertical-offset="6885">
+              <caret line="63" column="33" selection-start-line="63" selection-start-column="33" selection-end-line="63" selection-end-column="33" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#6156#6157#0" expanded="true" />
-                <element signature="e#6212#6213#0" expanded="true" />
-                <element signature="e#9165#9166#0" expanded="true" />
-                <element signature="e#9246#9247#0" expanded="true" />
-                <element signature="e#13319#13320#0" expanded="true" />
-                <element signature="e#13374#13375#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -46,10 +40,23 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/optionsCase/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.1551095" vertical-offset="561" max-vertical-offset="2397">
-              <caret line="38" column="43" selection-start-line="38" selection-start-column="43" selection-end-line="38" selection-end-column="43" />
+            <state vertical-scroll-proportion="0.33521128" vertical-offset="204" max-vertical-offset="2397">
+              <caret line="19" column="30" selection-start-line="19" selection-start-column="30" selection-end-line="19" selection-end-column="30" />
               <folding>
                 <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PairsCase.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pairsCase/src/PairsCase.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1020" max-vertical-offset="6766">
+              <caret line="72" column="5" selection-start-line="72" selection-start-column="5" selection-end-line="73" selection-end-column="0" />
+              <folding>
+                <element signature="e#1328#1329#0" expanded="true" />
+                <element signature="e#1409#1410#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -69,8 +76,9 @@
         <option value="$PROJECT_DIR$/indexCase/src/TestIndexCase.java" />
         <option value="$PROJECT_DIR$/indexCase/src/Main.java" />
         <option value="$PROJECT_DIR$/optionsCase/src/MySVM.java" />
-        <option value="$PROJECT_DIR$/optionsCase/src/TestOptionsCase.java" />
+        <option value="$PROJECT_DIR$/pairsCase/src/PairsCase.java" />
         <option value="$PROJECT_DIR$/optionsCase/src/Main.java" />
+        <option value="$PROJECT_DIR$/optionsCase/src/TestOptionsCase.java" />
       </list>
     </option>
   </component>
@@ -120,7 +128,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="optionsCase" />
+              <option name="myItemId" value="pairsCase" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -130,21 +138,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="optionsCase" />
+              <option name="myItemId" value="pairsCase" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="uchicago-algo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="indexCase" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -392,12 +390,14 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32985657" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32767403" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24921875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -405,14 +405,12 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39895698" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32985657" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3285528" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39895698" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -468,22 +466,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/optionsCase/src/TestOptionsCase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5593">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#6156#6157#0" expanded="true" />
-            <element signature="e#6212#6213#0" expanded="true" />
-            <element signature="e#9165#9166#0" expanded="true" />
-            <element signature="e#9246#9247#0" expanded="true" />
-            <element signature="e#13319#13320#0" expanded="true" />
-            <element signature="e#13374#13375#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/optionsCase/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1056" max-vertical-offset="2244">
@@ -521,12 +503,6 @@
           <caret line="208" column="18" selection-start-line="208" selection-start-column="18" selection-end-line="208" selection-end-column="18" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#6156#6157#0" expanded="true" />
-            <element signature="e#6212#6213#0" expanded="true" />
-            <element signature="e#9165#9166#0" expanded="true" />
-            <element signature="e#9246#9247#0" expanded="true" />
-            <element signature="e#13319#13320#0" expanded="true" />
-            <element signature="e#13374#13375#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -568,12 +544,6 @@
           <caret line="61" column="39" selection-start-line="61" selection-start-column="39" selection-end-line="61" selection-end-column="39" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#6156#6157#0" expanded="true" />
-            <element signature="e#6212#6213#0" expanded="true" />
-            <element signature="e#9165#9166#0" expanded="true" />
-            <element signature="e#9246#9247#0" expanded="true" />
-            <element signature="e#13319#13320#0" expanded="true" />
-            <element signature="e#13374#13375#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -594,12 +564,6 @@
           <caret line="61" column="39" selection-start-line="61" selection-start-column="39" selection-end-line="61" selection-end-column="39" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#6156#6157#0" expanded="true" />
-            <element signature="e#6212#6213#0" expanded="true" />
-            <element signature="e#9165#9166#0" expanded="true" />
-            <element signature="e#9246#9247#0" expanded="true" />
-            <element signature="e#13319#13320#0" expanded="true" />
-            <element signature="e#13374#13375#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -620,12 +584,6 @@
           <caret line="61" column="39" selection-start-line="61" selection-start-column="39" selection-end-line="61" selection-end-column="39" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#6156#6157#0" expanded="true" />
-            <element signature="e#6212#6213#0" expanded="true" />
-            <element signature="e#9165#9166#0" expanded="true" />
-            <element signature="e#9246#9247#0" expanded="true" />
-            <element signature="e#13319#13320#0" expanded="true" />
-            <element signature="e#13374#13375#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -674,12 +632,6 @@
           <caret line="96" column="61" selection-start-line="96" selection-start-column="61" selection-end-line="96" selection-end-column="61" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#6156#6157#0" expanded="true" />
-            <element signature="e#6212#6213#0" expanded="true" />
-            <element signature="e#9165#9166#0" expanded="true" />
-            <element signature="e#9246#9247#0" expanded="true" />
-            <element signature="e#13319#13320#0" expanded="true" />
-            <element signature="e#13374#13375#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -707,12 +659,6 @@
           <caret line="145" column="22" selection-start-line="145" selection-start-column="22" selection-end-line="145" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#6156#6157#0" expanded="true" />
-            <element signature="e#6212#6213#0" expanded="true" />
-            <element signature="e#9165#9166#0" expanded="true" />
-            <element signature="e#9246#9247#0" expanded="true" />
-            <element signature="e#13319#13320#0" expanded="true" />
-            <element signature="e#13374#13375#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -898,26 +844,31 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pairsCase/src/PairsCase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1020" max-vertical-offset="6766">
+          <caret line="72" column="5" selection-start-line="72" selection-start-column="5" selection-end-line="73" selection-end-column="0" />
+          <folding>
+            <element signature="e#1328#1329#0" expanded="true" />
+            <element signature="e#1409#1410#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/optionsCase/src/TestOptionsCase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3366" max-vertical-offset="6987">
-          <caret line="199" column="40" selection-start-line="199" selection-start-column="40" selection-end-line="199" selection-end-column="40" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="867" max-vertical-offset="6885">
+          <caret line="63" column="33" selection-start-line="63" selection-start-column="33" selection-end-line="63" selection-end-column="33" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#6156#6157#0" expanded="true" />
-            <element signature="e#6212#6213#0" expanded="true" />
-            <element signature="e#9165#9166#0" expanded="true" />
-            <element signature="e#9246#9247#0" expanded="true" />
-            <element signature="e#13319#13320#0" expanded="true" />
-            <element signature="e#13374#13375#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/optionsCase/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1551095" vertical-offset="561" max-vertical-offset="2397">
-          <caret line="38" column="43" selection-start-line="38" selection-start-column="43" selection-end-line="38" selection-end-column="43" />
+        <state vertical-scroll-proportion="0.33521128" vertical-offset="204" max-vertical-offset="2397">
+          <caret line="19" column="30" selection-start-line="19" selection-start-column="30" selection-end-line="19" selection-end-column="30" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

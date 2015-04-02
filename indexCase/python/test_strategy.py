@@ -13,24 +13,13 @@ import time
 
 
 t1 = time.time()
-'''
-
--0.144513638179
--0.0503991617409
--0.19491279992
-
-'''
-
-
-
-
 
 ''' --- parameters --- '''
 ROUND = 3
 PLOT_BENCHMARK = True
 OFFSET = 0000
 WINDOW_LENGTH = 10000
-substitution_window = 10  # tuned: round 1 - 5, round 2 - 7, round 3 - ?
+substitution_window = 14  # tuned: round 1 - 5, round 2 - 7, round 3 - 15
 buyback_window = 1
 corr_window = 100
 NO_T_COSTS = False

@@ -33,52 +33,36 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="options_vol_analysis.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/options_vol_analysis.py">
+      <file leaf-file-name="trade.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../pairsCase/python/trade.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="102" max-vertical-offset="2057">
-              <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-              <folding />
+            <state vertical-scroll-proportion="0.04927536" vertical-offset="2142" max-vertical-offset="4947">
+              <caret line="127" column="19" selection-start-line="127" selection-start-column="19" selection-end-line="127" selection-end-column="19" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bootstrap.py" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/bootstrap.py">
+      <file leaf-file-name="pairs_sim.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../pairsCase/python/pairs_sim.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5972973" vertical-offset="153" max-vertical-offset="2635">
-              <caret line="30" column="50" selection-start-line="30" selection-start-column="50" selection-end-line="30" selection-end-column="50" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="options_sim.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/options_sim.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1037">
-              <caret line="15" column="24" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test_strategy.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../indexCase/python/test_strategy.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="629" max-vertical-offset="5984">
-              <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1547">
+              <caret line="7" column="28" selection-start-line="7" selection-start-column="28" selection-end-line="7" selection-end-column="28" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="a.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../indexCase/python/a.py">
+        <entry file="file://$PROJECT_DIR$/../../pairsCase/python/a.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="102" max-vertical-offset="2686">
-              <caret line="19" column="5" selection-start-line="19" selection-start-column="5" selection-end-line="19" selection-end-column="5" />
-              <folding />
+            <state vertical-scroll-proportion="0.0" vertical-offset="339" max-vertical-offset="816">
+              <caret line="37" column="37" selection-start-line="37" selection-start-column="37" selection-end-line="37" selection-end-column="37" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -96,9 +80,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/../../../../CS 242/MyPortfolio/src/svn_list.xml" />
-        <option value="$PROJECT_DIR$/../../../../CS 242/MyPortfolio/src/svn_log.xml" />
-        <option value="$PROJECT_DIR$/../../pairsCase/python/pairs_sim.py" />
         <option value="$PROJECT_DIR$/../../../../CS 242/MyPortfolio/test/test_svnparser.py" />
         <option value="$PROJECT_DIR$/../../../../CS 242/MyPortfolio/src/svnparser.py" />
         <option value="$PROJECT_DIR$/../../../../CS 242/MyPortfolio/src/server.py" />
@@ -144,9 +125,12 @@
         <option value="$PROJECT_DIR$/Volatility Prediction ML/svm.py" />
         <option value="$PROJECT_DIR$/Volatility Prediction ML/svm-coeffs" />
         <option value="$PROJECT_DIR$/../../indexCase/python/a.py" />
-        <option value="$PROJECT_DIR$/../../indexCase/python/test_strategy.py" />
         <option value="$PROJECT_DIR$/options_vol_analysis.py" />
         <option value="$PROJECT_DIR$/bootstrap.py" />
+        <option value="$PROJECT_DIR$/../../indexCase/python/test_strategy.py" />
+        <option value="$PROJECT_DIR$/../../pairsCase/python/pairs_sim.py" />
+        <option value="$PROJECT_DIR$/../../pairsCase/python/a.py" />
+        <option value="$PROJECT_DIR$/../../pairsCase/python/trade.py" />
       </list>
     </option>
   </component>
@@ -200,6 +184,26 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="options" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="python" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="options" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="python" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
@@ -229,7 +233,7 @@
       <recent name="C:\Users\Greg Pastorek\Documents\CS 242\MyPortfolio\static\html" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.bootstrap">
+  <component name="RunManager" selected="Python.trade">
     <configuration default="false" name="options_vol_analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -248,37 +252,39 @@
       <ConfigurationWrapper RunnerId="PythonRunner" />
       <method />
     </configuration>
-    <configuration default="false" name="options_sim" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration default="false" name="trade" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../pairsCase/python" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="options" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/options_sim.py" />
+      <module name="pairs" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../pairsCase/python/trade.py" />
       <option name="PARAMETERS" value="" />
+      <RunnerSettings RunnerId="PyDebugRunner" />
       <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PyDebugRunner" />
       <ConfigurationWrapper RunnerId="PythonRunner" />
       <method />
     </configuration>
-    <configuration default="false" name="bootstrap" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration default="false" name="pairs_sim" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../pairsCase/python" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="options" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bootstrap.py" />
+      <module name="pairs" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../pairsCase/python/pairs_sim.py" />
       <option name="PARAMETERS" value="" />
       <RunnerSettings RunnerId="PythonRunner" />
       <ConfigurationWrapper RunnerId="PythonRunner" />
@@ -298,9 +304,7 @@
       <module name="index" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../indexCase/python/test_strategy.py" />
       <option name="PARAMETERS" value="" />
-      <RunnerSettings RunnerId="PyDebugRunner" />
       <RunnerSettings RunnerId="PythonRunner" />
-      <ConfigurationWrapper RunnerId="PyDebugRunner" />
       <ConfigurationWrapper RunnerId="PythonRunner" />
       <method />
     </configuration>
@@ -311,12 +315,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../indexCase/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../pairsCase/python" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="index" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../indexCase/python/a.py" />
+      <module name="pairs" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../pairsCase/python/a.py" />
       <option name="PARAMETERS" value="" />
       <RunnerSettings RunnerId="PythonRunner" />
       <ConfigurationWrapper RunnerId="PythonRunner" />
@@ -466,18 +470,18 @@
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="Python.test_nlp" />
       <item index="1" class="java.lang.String" itemvalue="Python.options_vol_analysis" />
-      <item index="2" class="java.lang.String" itemvalue="Python.options_sim" />
-      <item index="3" class="java.lang.String" itemvalue="Python.bootstrap" />
+      <item index="2" class="java.lang.String" itemvalue="Python.trade" />
+      <item index="3" class="java.lang.String" itemvalue="Python.pairs_sim" />
       <item index="4" class="java.lang.String" itemvalue="Python.test_strategy" />
       <item index="5" class="java.lang.String" itemvalue="Python.a" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.bootstrap" />
-        <item index="1" class="java.lang.String" itemvalue="Python.options_vol_analysis" />
-        <item index="2" class="java.lang.String" itemvalue="Python.test_strategy" />
-        <item index="3" class="java.lang.String" itemvalue="Python.a" />
-        <item index="4" class="java.lang.String" itemvalue="Python.options_sim" />
+        <item index="0" class="java.lang.String" itemvalue="Python.trade" />
+        <item index="1" class="java.lang.String" itemvalue="Python.a" />
+        <item index="2" class="java.lang.String" itemvalue="Python.pairs_sim" />
+        <item index="3" class="java.lang.String" itemvalue="Python.test_strategy" />
+        <item index="4" class="java.lang.String" itemvalue="Python.options_vol_analysis" />
       </list>
     </recent_temporary>
   </component>
@@ -495,17 +499,17 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1296" height="698" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4552333" sideWeight="0.67625" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4601626" sideWeight="0.67625" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33291298" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33170733" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.37235773" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -559,39 +563,16 @@
           <line>55</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/../../pairsCase/python/trade.py</url>
+          <line>128</line>
+          <option name="timeStamp" value="177" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="168" />
+      <option name="time" value="179" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://C:/Python27/Lib/site-packages/tornado/platform/select.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="854" max-vertical-offset="1326">
-          <caret line="63" column="0" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python27/Lib/site-packages/tornado/ioloop.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="13315" max-vertical-offset="16558">
-          <caret line="811" column="0" selection-start-line="811" selection-start-column="0" selection-end-line="811" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../pairsCase/python/pairs_sim.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="102" max-vertical-offset="1530">
-          <caret line="15" column="79" selection-start-line="15" selection-start-column="79" selection-end-line="15" selection-end-column="79" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python27/Lib/shlex.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="4584" max-vertical-offset="5032">
-          <caret line="182" column="41" selection-start-line="182" selection-start-column="41" selection-end-line="182" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../../../CS 242/MyPortfolio/python/src/svn_list.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.9321357" vertical-offset="63980" max-vertical-offset="64549">
@@ -856,6 +837,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33248082" vertical-offset="19590" max-vertical-offset="28458">
           <caret line="1225" column="0" selection-start-line="1225" selection-start-column="0" selection-end-line="1225" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -895,35 +877,71 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../indexCase/python/test_strategy.py">
+    <entry file="file://$PROJECT_DIR$/options_sim.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="153" max-vertical-offset="5797">
-          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="153" max-vertical-offset="1037">
+          <caret line="15" column="24" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/options_vol_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="2023">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2023">
           <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/options_sim.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1037">
-          <caret line="15" column="24" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/bootstrap.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5972973" vertical-offset="153" max-vertical-offset="2635">
-          <caret line="30" column="50" selection-start-line="30" selection-start-column="50" selection-end-line="30" selection-end-column="50" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2635">
+          <caret line="20" column="16" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="16" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../indexCase/python/test_strategy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.13315926" vertical-offset="0" max-vertical-offset="5610">
+          <caret line="14" column="16" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm30/system/python_stubs/-762174762/__builtin__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4704301" vertical-offset="51573" max-vertical-offset="87567">
+          <caret line="3044" column="0" selection-start-line="3044" selection-start-column="0" selection-end-line="3044" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../pairsCase/python/a.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="339" max-vertical-offset="816">
+          <caret line="37" column="37" selection-start-line="37" selection-start-column="37" selection-end-line="37" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../pairsCase/python/pairs_sim.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1547">
+          <caret line="7" column="28" selection-start-line="7" selection-start-column="28" selection-end-line="7" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../pairsCase/python/trade.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.04927536" vertical-offset="2142" max-vertical-offset="4947">
+          <caret line="127" column="19" selection-start-line="127" selection-start-column="19" selection-end-line="127" selection-end-column="19" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

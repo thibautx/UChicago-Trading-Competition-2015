@@ -10,19 +10,19 @@ from pprint import PrettyPrinter
 
 PLOT = False
 
-total_runs = 1000
+total_runs = 10
 
 alpha = [1.0]
 xi = [2.0]
 ema_decay = [0.1]
 edge_estimate = [0.04]
-beta = [0.00, 0.01]
+beta = [0.00, 0.01, 0.05]
 beta_decay = [0.9, 1.2]
 hit_weight = [5]
 miss_streak_weight = [3]
 miss_count_trigger = [3]
 iota = [0.0]
-fucked_up_trigger = [7, 10]
+fucked_up_trigger = [4, 7]
 
 
 #(1.0, 2.0, 0.1, 0.04, 0.01, 1.2, 5, 3, 3, 0.0, 7)
