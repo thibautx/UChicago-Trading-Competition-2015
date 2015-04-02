@@ -118,7 +118,6 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
 
     //helper function that implements a dummy strategy for round 1
     public Order[] roundOneStrategy (double priceHuron, double priceSuperior){
-       
         if(tick >= fast_mavg_window){
             adjustPosition(pair1);
         }
@@ -192,9 +191,10 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     }
 
     private void adjustPosition(StockPair pair){
-        // Set orders to 0 first
+        /*
         orders[pair.index1].quantity = 0;
         orders[pair.index2].quantity = 0;
+        */
         if(pair.position == "cash"){
             // Look for entry
             checkCashEntry(pair);
@@ -211,6 +211,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     // @TODO: update the std
     private void checkCashEntry(StockPair pair){
         // we want to go short
+        log("spread" + pair.spread[tick] + "diff (spread-slow_mavg): " + pair.diff + "entry_threshold: " + entry_threshold + "std: " + pair.std + "momentum_mavg: " + pair.momentum_mavg + "momentum threshold: " + momentum_threshold);
         if(pair.diff >= entry_threshold*pair.std && entry_threshold*pair.std>= 2.0*pair.spread[tick] && pair.momentum_mavg <= momentum_threshold){
             pair.entry_spread = pair.spread[tick];
             // Make the order
@@ -314,26 +315,15 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     }
     private void updatePair(StockPair pair){
         //log(prices[0] + " " + prices[1]);
-        pair1.price1 = prices[pair1.index1];
-        pair1.price2 = prices[pair1.index2];
-        pair1.spread[tick] = pair1.price1 - pair1.price2;
-        pair1.slow_mavg = movingAverage(pair1, slow_mavg_window);
-        pair1.fast_mavg = movingAverage(pair1, fast_mavg_window);
-        pair1.momentum_mavg = momentumMovingAverage(pair1);
-        pair1.diff = pair1.spread[tick] - pair1.slow_mavg;
-        pair1.std = standardDeviation(pair1); // check the std function
+        pair.price1 = prices[pair.index1];
+        pair.price2 = prices[pair.index2];
+        pair.spread[tick] = pair.price1 - pair.price2;
+        pair.slow_mavg = movingAverage(pair, slow_mavg_window);
+        pair.fast_mavg = movingAverage(pair, fast_mavg_window);
+        pair.momentum_mavg = momentumMovingAverage(pair);
+        pair.diff = pair.spread[tick] - pair.slow_mavg;
+        pair.std = standardDeviation(pair); // check the std function
 
-        /*
-        pair2.price1 = prices[pair2.index1];
-        pair2.price2 = prices[pair2.index2];
-        pair2.spread[tick] = pair2.price1 - pair2.price2;
-        pair2.slow_mavg = movingAverage(pair2, slow_mavg_window);
-        pair2.fast_mavg = movingAverage(pair2, fast_mavg_window);
-        pair2.momentum_mavg = momentumMovingAverage(pair2);
-        pair2.diff = pair2.spread[tick] - pair2.slow_mavg;
-        pair2.std = standardDeviation(pair2); // Check this
-
-        */
     }
 
     private double movingAverage(StockPair pair, int window){
