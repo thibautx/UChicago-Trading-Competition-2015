@@ -213,7 +213,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     private void checkCashEntry(StockPair pair){
         // we want to go short
         log("spread" + pair.spread[tick] + "diff (spread-slow_mavg): " + pair.diff + "entry_threshold: " + entry_threshold + "std: " + pair.std + "momentum_mavg: " + pair.momentum_mavg + "momentum threshold: " + momentum_threshold);
-        if(pair.diff >= entry_threshold*pair.std && entry_threshold*pair.std>= 2.0*pair.spread[tick] && pair.momentum_mavg <= momentum_threshold){
+        if(pair.diff >= entry_threshold*pair.std && entry_threshold*pair.std >= 2.0*pair.spread[tick] && pair.momentum_mavg <= momentum_threshold){
             pair.entry_spread = pair.spread[tick];
             // Make the order
             orders[pair.index1].quantity = -positionLimit;
@@ -315,7 +315,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         }
     }
     private void updatePair(StockPair pair){
-        //log(prices[0] + " " + prices[1]);
+        // After every tick, we update the data contained in the StockPair object
         pair.price1 = prices[pair.index1];
         pair.price2 = prices[pair.index2];
         pair.spread[tick] = pair.price1 - pair.price2;
@@ -383,7 +383,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         double price1;
         double price2;
         double entry_spread;
-        double[] spread; // the the spread of the pair
+        double[] spread; // timeseries of the spread
         /* Indicators */
         double diff;
         double slow_mavg;
