@@ -35,7 +35,7 @@ for i, sec in enumerate(securities):
     L.append(i)
 
 axes[0].legend(H, L)
-axes[1].plot(np.subtract(securities[0], securities[2]))
+axes[1].plot(np.diff(np.subtract(securities[0], securities[1])))
 
 
 plt.show()

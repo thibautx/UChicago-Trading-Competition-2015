@@ -24,9 +24,8 @@ buyback_window = 1
 corr_window = 100
 NO_T_COSTS = False
 NO_BUYBACK = False
-RECOMPUTE_CORR = False
-#RECOMPUTE_CORR = True
-REBALANCE_THRESHOLD = 0.3
+#RECOMPUTE_CORR = False
+RECOMPUTE_CORR = True
 ''' ------------------ '''
 
 BASE_DIR = path.dirname(path.dirname(__file__))
@@ -146,11 +145,11 @@ def compute_score(mode=False, RECOMPUTE_CORR_=False):
                 if not first_val:
                     first_val = np.dot(weights, map(float, line.split(","))[:-1])
 
-                if RECOMPUTE_CORR_ and i >= corr_window:
+                if RECOMPUTE_CORR_ and i >= corr_window and i % 100 == 0:
                     P = np.corrcoef(Y[:, i - corr_window:i], Y[:, i - corr_window:i])[:n, :n]
 
                 # if we are at a tradable change, make adjustments
-                if i in tradable or i == start or RECOMPUTE_CORR_:
+                if i in tradable or i == start:
 
                     if lcur_tradable and i > start and i <= end:
                         for sec in lcur_tradable:
@@ -165,15 +164,14 @@ def compute_score(mode=False, RECOMPUTE_CORR_=False):
 
                     for sec in securities:
 
+                        if cur_tradable[cur_subs[sec]['sub']] and not cur_tradable[sec]:
+                            continue
+
                         Pc = np.copy(P)
 
                         substitute = np.argmax(Pc[sec])
 
-                        while (not cur_tradable[substitute]) or \
-                                (RECOMPUTE_CORR_ and cur_tradable[cur_subs[sec]['sub']] and \
-                                 not cur_subs[sec]['sub'] == substitute and \
-                                 Pc[sec, cur_subs[sec]['sub']] < 0 and \
-                                 Pc[sec, substitute] - Pc[sec, cur_subs[sec]['sub']] < REBALANCE_THRESHOLD):
+                        while (not cur_tradable[substitute]):
                             Pc[sec, substitute] = -np.inf
                             substitute = np.argmax(Pc[sec])
                             if mode == 'random':

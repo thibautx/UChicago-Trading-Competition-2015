@@ -5,7 +5,7 @@ from numpy.random import choice, normal
 from random import sample
 import matplotlib.pyplot as plt
 
-case_file = open("case_data2.csv", "w")
+case_file = open("case_data3.csv", "w")
 
 
 '''START PARAMETERS'''
@@ -24,7 +24,7 @@ volatility = [0.00583374056882, 0.0163198571397, 0.02]
 drift = [0, 0, 0]
 
 # cointegration gamma, controls how strong each pair is cointegrated, should be between 0 and 1, recommend between 0.001 and 0.2
-gamma = [0.005]
+gamma = [0.2]
 
 # cointegrating vectors
 alpha = [(1.0, -1.0), (1.0, -1.0)]

@@ -31,9 +31,6 @@ public class TestOptionsCase {
 
     final int strikes[] = {80, 90, 100, 110, 120};
 
-    double cur_iota = 0;
-    double iota;
-
     double svm_threshold;
 
     double cash = 0;
@@ -63,11 +60,6 @@ public class TestOptionsCase {
     double d_vol_cap = 0.25;
     double max_beta_d_vol = 0.015;
 
-    EMA ticksPosVega = new EMA(0.5);
-    EMA ticksNegVega = new EMA(0.5);
-    int pos_vega_ticks = 0;
-    int neg_vega_ticks = 0;
-
     LinkedList<Double> last_vegas = new LinkedList<Double>();
 
 
@@ -79,7 +71,6 @@ public class TestOptionsCase {
         alpha = alpha_;
         xi = xi_;
         edge_estimate = edge_estimate_;
-        iota = iota_;
         beta = beta_;
         beta_decay_rate = beta_decay_;
         cur_beta = beta;
@@ -116,46 +107,21 @@ public class TestOptionsCase {
             lastVol = impliedVolEMA.get() + d_vol_cap*Math.signum(d_vol);
         }
 
-        /* add lastVol to IV EMA */
-        for(int x = 0; x < hit_weight * (1 + miss_streak_weight*Math.max(0, cur_miss_count-miss_count_trigger)); x++) {
-            impliedVolEMA.average(lastVol);
-        }
-
-        /*
-        if(-1*side == Math.signum(getTotalVegaRisk())){
-            for(int x = 0; x < 2; x++) {
-                impliedVolEMA.average(lastVol);
-            }
-        }
-        */
+        impliedVolEMA.average(lastVol);
 
         /* update position */
         positions.put(strike, positions.get(strike) - side);
 
         cash += side*price;
 
-        if(side == 1){
-            neg_vega_ticks++;
-        } else {
-            pos_vega_ticks++;
-        }
-
         double vega = getTotalVegaRisk();
 
-        cur_iota = 0;
         cur_miss_count = 0;
         cur_beta = beta;
 
-        //impliedVolEMA.average(impliedVolEMA.get() + minAbs(vega * cur_beta, Math.signum(vega) * max_beta_d_vol));
-
-        //System.out.println("Vol = " + impliedVolEMA.get());
-
-        //System.out.println("Got filled, immediate gain is " + side*(truePrice - price));
-        //System.out.println("Got filled, immediate (avg) loss is " + side*(price-OptionsMathUtils.theoValue(strike, impliedVolEMA.get())));
     }
 
     public QuoteList getCurrentQuotes(){
-        //System.out.println("Received a request for current quotes");
 
         double totalVegaRisk = getTotalVegaRisk();
 
@@ -164,19 +130,6 @@ public class TestOptionsCase {
         if(last_vegas.size() > 10) {
             last_vegas.poll();
         }
-
-        /*
-        if(totalVegaRisk > 0){
-            ticksNegVega.average(neg_vega_ticks);
-            pos_vega_ticks++;
-            neg_vega_ticks = 0;
-        }
-        else if (totalVegaRisk < 0) {
-            ticksPosVega.average(pos_vega_ticks);
-            neg_vega_ticks++;
-            pos_vega_ticks = 0;
-        }
-        */
 
         System.out.println("PnL = " + getPnL());
         System.out.println("Vega = " +  + getTotalVegaRisk());
@@ -197,77 +150,22 @@ public class TestOptionsCase {
 
 
     public void noBrokerFills() {
-        //System.out.println("No match against broker the broker orders...time to adjust some levers?");
-        //if(cur_miss_count == miss_count_trigger) {
 
         double vega = getTotalVegaRisk();
 
         if(cur_miss_count >= we_fucked_up_trigger && cur_miss_count % 2 == 0) {
             double b = cur_miss_count * cur_beta / 10;
             cur_beta = Math.max(min_beta, cur_beta * beta_decay_rate);
-            //double b = beta;
             impliedVolEMA.average(impliedVolEMA.get() - 2*minAbs(vega * cur_beta, Math.signum(vega) * max_beta_d_vol));
-            //cur_miss_count = 0;
         }
-        /*else if(cur_miss_count >= we_fucked_up_trigger){// && cur_miss_count >= we_fucked_up_trigger) {
-            if (last_vegas.size() == 10) {
-                //double r = svm.decision_function(last_vegas);
-                double r = 0.0;
-                if (Math.abs(r) >= svm_threshold) {
-                    impliedVolEMA.average(impliedVolEMA.get() - minAbs(Math.signum(vega) * beta, Math.signum(vega) * max_beta_d_vol));
-                }
-            }
-            //cur_beta = beta;
-            //cur_miss_count = 0;
-        }*/
-
-
-
-        /*
-        if(cur_miss_count >= we_fucked_up_trigger){
-            //cur_iota += iota;
-            //cur_beta = beta;
-            cur_miss_count = 0;
-            double orig_vol = impliedVolEMA.get();
-            impliedVolEMA.average(impliedVolEMA.get() - minAbs(vega * fucked_beta, Math.signum(vega) * max_beta_d_vol));
-
-            //for(int i = 0; (i < 5) && (Math.abs(orig_vol - impliedVolEMA.get()) < max_beta_d_vol); i++) {
-            //    impliedVolEMA.average(impliedVolEMA.get() - minAbs(vega * fucked_beta, Math.signum(vega) * max_beta_d_vol));
-            //}
-        }
-        */
 
         if(-1 == last_vega_sign*vega){
             cur_beta = beta;
         }
 
-        /*
-        double nvt = (1 + ticksNegVega.get() + neg_vega_ticks) / 2.0;
-        double pvt = (1 + ticksPosVega.get() + pos_vega_ticks) / 2.0;
-        double q = pvt / nvt;
-
-        if(q < 0.125){
-            impliedVolEMA.average(impliedVolEMA.get() + minAbs(Math.abs(vega) * cur_beta, max_beta_d_vol));
-            cur_beta = Math.max(min_beta, cur_beta * beta_decay_rate);
-        }
-        else if (q > 8) {
-            impliedVolEMA.average(impliedVolEMA.get() - minAbs(Math.abs(vega) * cur_beta, max_beta_d_vol));
-            cur_beta = Math.max(min_beta, cur_beta * beta_decay_rate);
-        }
-        */
-
-
-        //if(cur_miss_count >= beta_trigger) {
-        //    impliedVolEMA.average(impliedVolEMA.get() - minAbs(vega * cur_beta, Math.signum(vega) * max_beta_d_vol));
-        //    cur_beta = Math.max(min_beta, cur_beta * beta_decay_rate);
-        //}
         cur_miss_count++;
         last_vega_sign = Math.signum(vega);
 
-        //} else {
-        //    cur_miss_count++;
-        //}
-        //spread -= 0.1;
     }
 
     public void penaltyNotice(double amount) {
@@ -280,14 +178,11 @@ public class TestOptionsCase {
         double vol = impliedVolEMA.get();
         double theoPrice = OptionsMathUtils.theoValue(strike, vol);
         double vega = OptionsMathUtils.calculateVega(strike, vol);
-        //double delta = vega * volSD * alpha;
         double delta = volSD * alpha;
         double m = 1;// + Math.max(0, cur_miss_count-miss_count_trigger);
         double omega = m * totalVegaRisk * xi;
-        double bidPrice = theoPrice * (1 - delta - Math.max(omega/500, omega) + cur_iota);
-        double askPrice = theoPrice * (1 + delta - Math.min(omega/500, omega)  - cur_iota);
-        //System.out.println("Bid omega is " + -1*Math.max(omega/5, omega));
-        //System.out.println("Ask omega is " + -1*Math.min(omega/5, omega));
+        double bidPrice = theoPrice * (1 - delta - Math.max(omega/500, omega));
+        double askPrice = theoPrice * (1 + delta - Math.min(omega/500, omega));
         System.out.println("Quote: " + Integer.toString(strike) + "|" + bidPrice + "|" + askPrice);
         return new Quote(strike, bidPrice, askPrice);
     }
