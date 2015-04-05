@@ -19,7 +19,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
 
     /* Algorithm Parameters */
     int slow_mavg_window, fast_mavg_window, momentum_mavg_window, std_window;
-    double entry_threshold, exit_threshold, risk_threshold, momentum_threshold, alpha;
+    double entry_threshold, exit_threshold, risk_threshold, momentum_threshold, alpha, ema_alpha;
 
     /* Global Data */
     int tick; // current tick
@@ -58,6 +58,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         entry_threshold = 1.0;
         exit_threshold = 0.7;
         momentum_threshold = 0.0;
+        ema_alpha = .075;
         std_window = 20;
         alpha = 1.0;
         log("Initialized parameters");
@@ -322,7 +323,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         // After every tick, we update the data contained in the StockPair object
         pair.price1 = prices[pair.index1];
         pair.price2 = prices[pair.index2];
-        log("tick " + tick + "price1 " + pair.price1 + "price2 " + pair.price2);
+        //log("tick " + tick + "price1 " + pair.price1 + "price2 " + pair.price2);
         pair.spread[tick] = pair.price1 - pair.price2;
         pair.slow_mavg[tick] = movingAverage(pair, slow_mavg_window);
         pair.fast_mavg[tick] = movingAverage(pair, fast_mavg_window);
@@ -332,25 +333,9 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
 
     }
 
-    private double expMovingAverage(StockPair pair){
-               
-        /*
-        ArrayList<Double> weights = new ArrayList<Double>();
-        double interval = 1/fast_mavg_window;
-        double sum = 0;
-        int idx = 0;
-        if(tick >= fast_mavg_window){
-            idx = fast_mavg_window-tick;
-        }
-        for(int i = idx; i < fast_mavg_window; i++){
-            sum += Math.exp((-1+(i*interval)));    
-            weights.add(Math.exp((-1+(i*interval))));
-        }
-        for(int i = idx; i < fast_mavg_window; i++){
-            weights.set(i, weights.get(i)/sum);
-        }
-        return 0;
-        */
+    private double expMovingAverage(StockPair pair){  
+        pair.ema.average(pair.spread[tick]);
+        return pair.ema.get();
     }
 
     private double movingAverage(StockPair pair, int window){
@@ -377,18 +362,18 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             offset = tick - momentum_mavg_window;
         }
         for(int i = offset; i < tick ; i++){
-            double delta = pair.spread[i+1+offset]-pair.spread[i+offset];
+            //log("spread t " + pair.spread[i+1]);
+            //log("spread t-1" + pair.spread[i]);
+            double delta = pair.spread[i+1]-pair.spread[i];
+            //log("delta " + delta);
             deltas.add(delta);
         }
         double cum_sum = 0;
         for(int i = 0; i < deltas.size(); i++){
-            if(tick > 38){
-                log("element " + deltas.get(i));
-            }
             cum_sum += deltas.get(i);
         }
-        log("momentum_mavg: " + cum_sum/deltas.size());
-        log("cum_sum " + cum_sum + "size " + deltas.size());
+        //log("momentum_mavg: " + cum_sum/deltas.size());
+        //log("cum_sum " + cum_sum + "size " + deltas.size());
         return cum_sum / deltas.size();
     }
 
@@ -456,6 +441,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         double diff;
         double[] slow_mavg;
         double[] fast_mavg;
+        EMA ema;
         double[] exp_mavg;
         double[] momentum_mavg;
         double[] std;
@@ -463,6 +449,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             this.spread = new double[1000];
             this.slow_mavg = new double[1000];
             this.fast_mavg = new double[1000];
+            ema = new EMA(ema_alpha);
             this.exp_mavg = new double[1000];
             this.momentum_mavg = new double[1000];
             this.std = new double[1000];
