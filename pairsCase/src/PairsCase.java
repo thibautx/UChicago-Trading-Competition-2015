@@ -93,7 +93,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     @Override
     public Order[] getNewQuotes(Quote[] quotes) {
         tick++; // update the tick
-        log("Tick " + tick + "Current PnL " + pnl);
+        log("Tick " + tick + " Current PnL " + pnl);
         //log("Current position is " + pair1.position + " Stock 1 holdings: " + pair1.stock1holdings + "Stock 2 holdings: " + pair1.stock2holdings);
         if (numSymbols == 2) {
             log("Current position " + pair1.position);
@@ -108,7 +108,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             priceSuperior = quotes[1].bid;
             priceMichigan = quotes[2].bid;
             updatePrices();
-            for(StockPair pair : allPairs){
+            for(StockPair pair : allPairs.keySet()){
                 updatePair(pair);
             }
             return roundTwoStrategy(priceHuron, priceSuperior, priceMichigan);
@@ -119,7 +119,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             priceOntario = quotes[3].bid;
             priceErie = quotes[4].bid;
             updatePrices();
-            for(StockPair pair : allPairs){
+            for(StockPair pair : allPairs.keySet()){
                 updatePair(pair);
             }
             return roundThreeStrategy(priceHuron, priceSuperior, priceMichigan, priceOntario, priceErie);
@@ -322,6 +322,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         // After every tick, we update the data contained in the StockPair object
         pair.price1 = prices[pair.index1];
         pair.price2 = prices[pair.index2];
+        log("tick " + tick + "price1 " + pair.price1 + "price2 " + pair.price2);
         pair.spread[tick] = pair.price1 - pair.price2;
         pair.slow_mavg[tick] = movingAverage(pair, slow_mavg_window);
         pair.fast_mavg[tick] = movingAverage(pair, fast_mavg_window);
@@ -332,6 +333,8 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     }
 
     private double expMovingAverage(StockPair pair){
+               
+        /*
         ArrayList<Double> weights = new ArrayList<Double>();
         double interval = 1/fast_mavg_window;
         double sum = 0;
@@ -347,6 +350,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             weights.set(i, weights.get(i)/sum);
         }
         return 0;
+        */
     }
 
     private double movingAverage(StockPair pair, int window){
@@ -367,20 +371,25 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     }   
 
     private double momentumMovingAverage(StockPair pair){
-        ArrayList<Double> derivs = new ArrayList<Double>();
+        ArrayList<Double> deltas = new ArrayList<Double>();
         int offset = 0;
         if(tick >= momentum_mavg_window){
             offset = tick - momentum_mavg_window;
         }
-        for(int i = offset; i < momentum_mavg_window-1 ; i++){
-            derivs.add(pair.spread[i+1+offset]-pair.spread[i+offset]);
+        for(int i = offset; i < tick ; i++){
+            double delta = pair.spread[i+1+offset]-pair.spread[i+offset];
+            deltas.add(delta);
         }
         double cum_sum = 0;
-        for(int i = 0; i < derivs.size(); i++){
-            cum_sum += derivs.get(i);
+        for(int i = 0; i < deltas.size(); i++){
+            if(tick > 38){
+                log("element " + deltas.get(i));
+            }
+            cum_sum += deltas.get(i);
         }
-        log("momentum_mavg: " + cum_sum/derivs.size());
-        return cum_sum / derivs.size();
+        log("momentum_mavg: " + cum_sum/deltas.size());
+        log("cum_sum " + cum_sum + "size " + deltas.size());
+        return cum_sum / deltas.size();
     }
 
     private double standardDev(StockPair pair){
@@ -402,6 +411,35 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             }
         }
         return stdev;
+    }
+
+    public class EMA {
+
+        private double alpha;
+        private Double oldValue;;
+
+        public EMA(double alpha) {
+            this.alpha = alpha;
+        }
+
+        public double average(double value) {
+            if (oldValue == null) {
+                oldValue = value;
+                return value;
+            }
+            double newValue = oldValue + alpha * (value - oldValue);
+            oldValue = newValue;
+            return newValue;
+        }
+
+        public double get() {
+            if(oldValue == null){
+                return 0;
+            } else {
+                return oldValue;
+            }
+        }
+
     }
 
     public class StockPair{
