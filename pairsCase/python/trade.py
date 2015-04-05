@@ -5,12 +5,12 @@ from statsmodels.tsa.stattools import adfuller
 
 #global pnl, entry_spread, curr_spread, stock_spread, pos_multiple, pos_limit
 global pos_limit, pos_multiple, stock_spread, weights
-pos_limit = 60
+pos_limit = 40
 weights = [1.0, -1.0]
 pos_multiple = {"cash":0.0, "short":-1.0, "long":1.0}
 stock_spread = 1.0
 
-ORDER_POWER = 1
+ORDER_POWER = 2
 ENSURE_MIN_SPREAD_BUYBACK = False
 NO_STD = False
 
@@ -309,8 +309,8 @@ def graph(spread, mavgs, trades, pnlarray, threshold_series, positions):
 
 if __name__ == "__main__":
     #global pnl, entry_spread, curr_spread
-    data = open("PairsRound1.csv", 'r')
-    #data = open("PairsRound2.csv", 'r')
+    #data = open("PairsRound1.csv", 'r')
+    data = open("PairsRound2.csv", 'r')
     #data = open("case_data.csv", 'r')
     #data = open("case_data2.csv", 'r')
     #data = open("case_data3.csv", 'r')
@@ -323,7 +323,7 @@ if __name__ == "__main__":
     1-2: adf=-0.508423561302, pvalue=0.890362186091, gamma=0.976328123767
     '''
 
-    DO_ADF = False
+    DO_ADF = True
     W = 1000
     if DO_ADF:
         prices = zip(*[map(float, line.split(",")) for line in data])

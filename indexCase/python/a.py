@@ -17,9 +17,9 @@ from os import path
 '''
 
 ''' --- parameters --- '''
-Z = 200
+Z = 25
 ZZ = 10*Z
-ROUND = 3
+ROUND = 2
 PLOT_BENCHMARK = False
 OFFSET = 0000
 WINDOW_LENGTH = 10000
@@ -132,8 +132,9 @@ c2_series = []
 ma_series = []
 
 for i in xrange(OFFSET, WINDOW_LENGTH+OFFSET-10*Z):
-    P = np.corrcoef(Y[:, i:i+Z], Y[:, i:i+Z])
-    P2 = np.corrcoef(Y[:, i:i+ZZ], Y[:, i:i+ZZ])
+    i_s = i
+    P = np.corrcoef(Y[:, i_s:i+Z], Y[:, i_s:i+Z])
+    P2 = np.corrcoef(Y[:, i_s:i+ZZ], Y[:, i_s:i+ZZ])
     c_series.append(P[0, 1])
     c2_series.append(P2[0, 1])
 

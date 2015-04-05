@@ -10,8 +10,9 @@ import java.util.Queue;
 public class Main {
 
     static boolean[] tradables = new boolean[30];
+    static boolean[] announcementTradables = new boolean[30];
     static double[] weights = new double[30];
-    static double[] last_weights = new double[30];
+    static double[] last_stock_values = new double[30];
     static double[] stock_values = new double[30];
     static double index_value;
     static double last_index_value;
@@ -34,6 +35,7 @@ public class Main {
             tradables[i] = (Integer.parseInt(line) == 1);
             i++;
         }
+        announcementTradables = tradables.clone();
     }
 
     private static void initWeights() throws IOException {
@@ -59,15 +61,15 @@ public class Main {
         double last_portfolio_value = 0;
 
         for(int i = 0; i < 30; i++){
-            last_portfolio_value += k*last_weights[i]*stock_values[i];
+            last_portfolio_value += k*weights[i]*last_stock_values[i];
         }
 
         for(int i = 0; i < 30; i++){
             portfolio_value += k*weights[i]*stock_values[i];
         }
 
-        double log_p_val = Math.log(portfolio_value / last_portfolio_value);
-        double log_i_val = Math.log(index_value / last_index_value);
+        double log_p_val = Math.log(portfolio_value) - Math.log(last_portfolio_value);
+        double log_i_val = Math.log(index_value) - Math.log(last_index_value);
 
         double difference = log_p_val - log_i_val;
 
@@ -81,7 +83,7 @@ public class Main {
 
         TestIndexCase mycase = new TestIndexCase();
 
-        mycase.initializeAlgo(/* add params here*/);
+        mycase.initializeAlgo();
 
         BufferedReader pricesReader = new BufferedReader(new FileReader(pricesFile));
         BufferedReader tradableChangesReader = new BufferedReader(new FileReader(tradableChangesFile));
@@ -96,46 +98,51 @@ public class Main {
 
         /* set initial last_portfolio_value and last_index_value */
         last_index_value = index_value;
-        last_weights = weights;
+        last_stock_values = stock_values.clone();
 
         /* call initial position */
         myweights = mycase.initalizePosition(stock_values, index_value, weights, tradables);
 
         int tick = 1;
         String line;
+        String tcr_line;
         while ((line = pricesReader.readLine()) != null) {
 
             /* check for announcements */
-            if(nextAnnouncement == null){
-                String tcr_line = tradableChangesReader.readLine();
+            if(nextAnnouncement == null &&
+                    ((tcr_line = tradableChangesReader.readLine()) != null)){
                 String[] tcr_line_split = tcr_line.split(",");
                 int regTick = Integer.parseInt(tcr_line_split[0]) + 20;
                 int regStock = Integer.parseInt(tcr_line_split[1]);
-                boolean regTradable = (Integer.parseInt(tcr_line_split[1]) == 1);
+                boolean regTradable = (Integer.parseInt(tcr_line_split[2]) == 1);
                 nextAnnouncement = new RegulationTuple(regTick, regStock, regTradable);
             }
 
             /* check if its time to release the next announcement */
-            if(nextAnnouncement.tick == tick - 20) {
+            if(nextAnnouncement != null && nextAnnouncement.tick - 20 == tick) {
                 regulationQueue.add(nextAnnouncement);
-                boolean[] t = tradables.clone();
-                t[nextAnnouncement.stock] = nextAnnouncement.tradable;
-                mycase.regulationAnnouncement(tick, tick+20, t);
+                announcementTradables[nextAnnouncement.stock] = nextAnnouncement.tradable;
+                mycase.regulationAnnouncement(tick, tick+20, announcementTradables);
+                nextAnnouncement = null;
             }
 
             /* check for updates */
-            if(!regulationQueue.isEmpty()){
+            while(!regulationQueue.isEmpty() && regulationQueue.peek().tick == tick){
                 RegulationTuple r = regulationQueue.peek();
-                if(r.tick == tick){
-                    tradables[r.stock] = r.tradable;
-                    regulationQueue.poll();
-                }
+                tradables[r.stock] = r.tradable;
+                regulationQueue.poll();
             }
 
             /* update prices */
             String[] line_split = line.split(",");
             updatePrices(line_split);
             double[] new_weights = mycase.updatePosition(tick, stock_values, index_value);
+
+            String str = "";
+            for(double w : new_weights) {
+                str += Double.toString(w) + ",";
+            }
+            //System.out.println(str);
 
             /* check that weights sum to 1 */
             double check_sum = 0;
@@ -148,13 +155,18 @@ public class Main {
                 throw new Exception();
             }
 
+            /* check for penalties */
+            for(int i = 0; i < 30; i++){
+                if(new_weights[i] != 0 && !tradables[i]){
+                    score -= Math.exp(100*new_weights[i]);
+                    mycase.penaltyNotification(tick, tradables);
+                }
+            }
 
             /* compute transcation costs */
             for(int i = 0; i < 30; i++){
                 score -= (Math.exp(Math.abs(weights[i] - new_weights[i])) - 1) / 200.0;
             }
-
-            last_weights = weights;
 
             weights = new_weights;
 
@@ -163,7 +175,7 @@ public class Main {
 
             tick++;
 
-            System.out.println("Score = " + score);
+            //System.out.println("Score = " + score);
 
         }
 
