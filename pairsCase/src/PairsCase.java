@@ -108,6 +108,9 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             priceSuperior = quotes[1].bid;
             priceMichigan = quotes[2].bid;
             updatePrices();
+            for(StockPair pair : allPairs){
+                updatePair(pair);
+            }
             return roundTwoStrategy(priceHuron, priceSuperior, priceMichigan);
         } else {
             priceHuron = quotes[0].bid;
@@ -116,6 +119,9 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             priceOntario = quotes[3].bid;
             priceErie = quotes[4].bid;
             updatePrices();
+            for(StockPair pair : allPairs){
+                updatePair(pair);
+            }
             return roundThreeStrategy(priceHuron, priceSuperior, priceMichigan, priceOntario, priceErie);
         }
         
