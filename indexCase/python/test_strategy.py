@@ -16,7 +16,7 @@ o = open("output.txt", "w")
 t1 = time.time()
 
 ''' --- parameters --- '''
-ROUND = 1
+ROUND = 2
 PLOT = True
 RUN_BENCHMARK = False
 WINDOW_LENGTH = 10000

@@ -11,71 +11,22 @@ import org.uchicago.pairs.PairsHelper.Quote;
 import org.uchicago.pairs.PairsHelper.Ticker;
 import org.uchicago.pairs.PairsUtils;
 
+import com.numericalmethod.suanshu.stats.test.timeseries.adf.AugmentedDickeyFuller;
+
+
 /**
  * Created by Greg Pastorek on 4/5/2015.
  */
 public class Main {
 
-    static File file = new File("C:\\Users\\Greg Pastorek\\Documents\\FEC\\uchicago-algo\\pairsCase\\python\\PairsRound1.csv");
-
-    static Ticker[] tickers = {
-            Ticker.ERIE,
-            Ticker.HURON,
-            Ticker.MICHIGAN,
-            Ticker.ONTARIO,
-            Ticker.SUPERIOR
-    };
-
     public static void main(String args[]) throws IOException {
 
-        double pnl = 0;
+        double[] x = {1, 2, 3, 2, 3, 4, 3, 2, 1, 3, 2, 1, 3, 2, 1, 1, 2, 4, 2, 2, 3, 1, 1};
 
-        double cash = 0;
+        AugmentedDickeyFuller adf = new AugmentedDickeyFuller(x);
 
-        HashMap<Ticker, Integer> positions = new HashMap<Ticker, Integer>();
-
-        for(Ticker ticker : tickers) {
-            positions.put(ticker, 0);
-        }
-
-        BufferedReader br = new BufferedReader(new FileReader(file));
-
-        TestPairsCase mycase = new TestPairsCase();
-
-        mycase.initializeAlgo();
-
-        String line;
-        while((line = br.readLine()) != null) {
-
-            String[] line_split = line.split(";");
-
-            Quote[] quotes = new Quote[line_split.length];
-
-            for(int i = 0; i < line_split.length; i++) {
-                double p = Double.parseDouble(line_split[i]);
-                quotes[i] = new Quote(tickers[i] , p - 0.5, p + 0.5);
-            }
-
-            Order[] orders = mycase.getNewQuotes(quotes);
-
-            for(int i = 0; i < orders.length; i++) {
-                Order o = orders[i];
-                if(o.quantity != 0) {
-                    int pos = positions.get(o.ticker);
-                    positions.put(o.ticker, pos+o.quantity);
-                    cash -= 0.5 * o.quantity;
-                    if(o.quantity > 0){
-                        cash -= (1.0 + quotes[i].bid) * o.quantity;
-                    } else {
-                        cash -= quotes[i].bid * o.quantity;
-                    }
-                }
-            }
-
-        }
+        System.out.println("" + adf.statistics());
 
     }
-
-
 
 }

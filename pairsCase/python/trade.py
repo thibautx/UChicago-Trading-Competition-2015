@@ -311,7 +311,7 @@ if __name__ == "__main__":
     #global pnl, entry_spread, curr_spread
     data = open("PairsRound1.csv", 'r')
     #data = open("PairsRound2.csv", 'r')
-    #data = open("case_data.csv", 'r')
+    data = open("case_data.csv", 'r')
     #data = open("case_data2.csv", 'r')
     #data = open("case_data3.csv", 'r')
     #graphStocks(data)
