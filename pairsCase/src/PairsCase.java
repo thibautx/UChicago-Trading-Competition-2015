@@ -95,6 +95,9 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     public Order[] getNewQuotes(Quote[] quotes) {
         tick++; // update the tick
         log("Tick " + tick + " Current PnL " + pnl);
+        for(int i = 0; i < orders.length; i++){
+            orders[i].quantity = 0;
+        }
         //log("Current position is " + pair1.position + " Stock 1 holdings: " + pair1.stock1holdings + "Stock 2 holdings: " + pair1.stock2holdings);
         if (numSymbols == 2) {
             log("Current position " + pair1.position);
