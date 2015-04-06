@@ -55,7 +55,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         slow_mavg_window = 500;
         fast_mavg_window = 20;
         momentum_mavg_window = 20;
-        entry_threshold = 0.8
+        entry_threshold = 0.8;
         exit_threshold = 0.6;
         momentum_threshold = 0.0;
         ema_alpha = .075;
