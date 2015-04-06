@@ -69,11 +69,9 @@ public class IndexCaseILL1 extends AbstractIndexCase implements IndexCase {
             //log("Will be Transferring " + t.weight + "from " + t.security + " to " + t.substitute + " and remaining = " + t.remaining + " and sw=" + t.sub_window);
 
             if (--t.remaining < t.sub_window) {
-                //log("Transferring " + t.weight + " from " + t.security + " to " + t.substitute);
                 my_portfolioWeights[t.substitute] += t.weight;
                 my_portfolioWeights[t.security] -= t.weight;
                 score -= (Math.exp(Math.abs(t.weight))-1) / 200;
-                //log("Weight is now " + my_portfolioWeights[t.security]);
             }
 
             if(my_portfolioWeights[t.security] < 10e-8){
@@ -96,18 +94,11 @@ public class IndexCaseILL1 extends AbstractIndexCase implements IndexCase {
             }
         }
 
-        //for(int sec = 0; sec < 30; sec++) {
-        //    if(ticksUntilTradable.get(sec) != 0 && my_portfolioWeights[sec] > 0){
-        //        //log(Integer.toString(sec) + " is banned and we tried wieght " + my_portfolioWeights[sec]);
-        //    }
-        //}
-
         double lpv = 0;
         double cpv = 0;
         for(int sec = 0; sec < 30; sec++) {
             lpv += last_prices[sec] * my_portfolioWeights[sec];
             cpv += underlyingPrices[sec] * my_portfolioWeights[sec];
-            //log("" + underlyingPrices[sec] + " * " + my_portfolioWeights[sec]);
         }
 
         double plr = Math.log(cpv/lpv);
@@ -122,7 +113,7 @@ public class IndexCaseILL1 extends AbstractIndexCase implements IndexCase {
         //log("p_r= " + plr );
         //log("i=" + indexValue);
         //log("p=" + cpv);
-        log("score = " + score);
+        //log("score = " + score);
 
         last_index = indexValue;
 
@@ -179,8 +170,6 @@ public class IndexCaseILL1 extends AbstractIndexCase implements IndexCase {
                 }
                 int transactions = (sec == substitute) ? 1 : Math.min(substitution_window, remaining - tut);
                 double weight = trueWeights[sec] / Math.min(transactions, remaining);
-                //log("tut=" + tut + " for " + substitute);
-                //log("transactions=" + transactions);
                 Transfer t = new Transfer(cur_sub.substitute, substitute, remaining, transactions, weight);
                 Substitution s = new Substitution(sec, substitute, t);
                 pendingTransfers.add(t);
@@ -267,9 +256,6 @@ public class IndexCaseILL1 extends AbstractIndexCase implements IndexCase {
 
     @Override
     public void initializeAlgo(IDB database) {
-        // Databases can be used to store data between rounds
-
-        //log("Initializing algo.");
 
         round = getIntVar("Round");
 
