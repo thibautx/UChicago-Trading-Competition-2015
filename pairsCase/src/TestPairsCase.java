@@ -45,7 +45,6 @@ public class TestPairsCase {
     StockPair pair2;
 
 
-    @Override
     public void initializeAlgo() {
         /* Intialize Parameters */
         slow_mavg_window = 500;

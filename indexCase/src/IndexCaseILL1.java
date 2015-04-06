@@ -113,7 +113,7 @@ public class IndexCaseILL1 extends AbstractIndexCase implements IndexCase {
         //log("p_r= " + plr );
         //log("i=" + indexValue);
         //log("p=" + cpv);
-        log("score = " + score);
+        //log("score = " + score);
 
         last_index = indexValue;
 
