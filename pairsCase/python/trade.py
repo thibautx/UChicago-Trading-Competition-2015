@@ -309,8 +309,8 @@ def graph(spread, mavgs, trades, pnlarray, threshold_series, positions):
 
 if __name__ == "__main__":
     #global pnl, entry_spread, curr_spread
-    #data = open("PairsRound1.csv", 'r')
-    data = open("PairsRound2.csv", 'r')
+    data = open("PairsRound1.csv", 'r')
+    #data = open("PairsRound2.csv", 'r')
     #data = open("case_data.csv", 'r')
     #data = open("case_data2.csv", 'r')
     #data = open("case_data3.csv", 'r')
@@ -323,7 +323,7 @@ if __name__ == "__main__":
     1-2: adf=-0.508423561302, pvalue=0.890362186091, gamma=0.976328123767
     '''
 
-    DO_ADF = True
+    DO_ADF = False
     W = 1000
     if DO_ADF:
         prices = zip(*[map(float, line.split(",")) for line in data])

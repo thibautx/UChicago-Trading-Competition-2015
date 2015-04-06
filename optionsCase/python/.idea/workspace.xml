@@ -36,8 +36,8 @@
       <file leaf-file-name="trade.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../../pairsCase/python/trade.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3381503" vertical-offset="6054" max-vertical-offset="6800">
-              <caret line="363" column="22" selection-start-line="363" selection-start-column="22" selection-end-line="363" selection-end-column="22" />
+            <state vertical-scroll-proportion="0.33333334" vertical-offset="948" max-vertical-offset="6800">
+              <caret line="62" column="9" selection-start-line="62" selection-start-column="4" selection-end-line="62" selection-end-column="9" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -129,8 +129,8 @@
         <option value="$PROJECT_DIR$/../../pairsCase/python/pairs_sim.py" />
         <option value="$PROJECT_DIR$/../../pairsCase/python/a.py" />
         <option value="$PROJECT_DIR$/../../indexCase/python/a.py" />
-        <option value="$PROJECT_DIR$/../../pairsCase/python/trade.py" />
         <option value="$PROJECT_DIR$/../../indexCase/python/test_strategy.py" />
+        <option value="$PROJECT_DIR$/../../pairsCase/python/trade.py" />
       </list>
     </option>
   </component>
@@ -233,7 +233,7 @@
       <recent name="C:\Users\Greg Pastorek\Documents\CS 242\MyPortfolio\static\html" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test_strategy">
+  <component name="RunManager" selected="Python.trade">
     <configuration default="false" name="options_vol_analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -479,8 +479,8 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.test_strategy" />
-        <item index="1" class="java.lang.String" itemvalue="Python.trade" />
+        <item index="0" class="java.lang.String" itemvalue="Python.trade" />
+        <item index="1" class="java.lang.String" itemvalue="Python.test_strategy" />
         <item index="2" class="java.lang.String" itemvalue="Python.a" />
         <item index="3" class="java.lang.String" itemvalue="Python.a (1)" />
         <item index="4" class="java.lang.String" itemvalue="Python.options_vol_analysis" />
@@ -938,8 +938,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../pairsCase/python/trade.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3381503" vertical-offset="6054" max-vertical-offset="6800">
-          <caret line="363" column="22" selection-start-line="363" selection-start-column="22" selection-end-line="363" selection-end-column="22" />
+        <state vertical-scroll-proportion="0.33333334" vertical-offset="948" max-vertical-offset="6800">
+          <caret line="62" column="9" selection-start-line="62" selection-start-column="4" selection-end-line="62" selection-end-column="9" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>

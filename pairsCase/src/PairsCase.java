@@ -55,11 +55,11 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         slow_mavg_window = 500;
         fast_mavg_window = 20;
         momentum_mavg_window = 20;
-        entry_threshold = 1.0;
-        exit_threshold = 0.7;
+        entry_threshold = 0.8
+        exit_threshold = 0.6;
         momentum_threshold = 0.0;
         ema_alpha = .075;
-        std_window = 20;
+        std_window = 100;
         alpha = 1.0;
         log("Initialized parameters");
         /* Initialize Tracking Data */
@@ -163,10 +163,8 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         for (Order o : orders){
             if (o.state != OrderState.FILLED){
                 if (o.state == OrderState.REJECTED){
-                    log("My order for " + o.ticker + "is rejected, time to check my position/limit");
                 }
             }else{
-                log("My order for " + o.ticker + "is filled");
             }
         }
     }
@@ -223,7 +221,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         /* short entry */
         if(goShort(pair)){
             pair.entry_spread = pair.spread[tick];
-            int qty = (int)(alpha*Math.pow((-pair.diff/pair.std[tick]),2));
+            int qty = (int)(-alpha*Math.pow((pair.diff/pair.std[tick]),2));
             qty = Math.max(qty, -pair.position-pos_limit/2);
             adjustOrder(pair, "short", qty);
             
@@ -231,7 +229,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         /* long entry */
         else if(goLong(pair)){
             pair.entry_spread = pair.spread[tick];
-            int qty = (int)(alpha*Math.pow((pair.diff/pair.std[tick]),2));
+            int qty = (int)(alpha*Math.pow((pair.diff/pair.std[tick]), 2));
             qty = Math.min(qty, pos_limit/2-pair.position);
             adjustOrder(pair, "long", qty);
         }
@@ -241,8 +239,9 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             int qty = -pair.position;
             adjustOrder(pair, "short", qty);
             if(goShort(pair)){
-                qty = (int)(alpha*Math.pow((-pair.diff/pair.std[tick]), 2));
+                qty = (int)(-alpha*Math.pow((pair.diff/pair.std[tick]), 2));
                 qty = Math.max(qty, -pos_limit/2);
+                adjustOrder(pair, "short", qty);
             }
         }
     }
@@ -260,11 +259,12 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
 
     private void adjustOrder(StockPair pair, String position, int qty){
         if(position == "short"){
-            orders[pair.index1].quantity -= qty;
-            orders[pair.index2].quantity += qty;
-            pair.stock1holdings -= qty;
-            pair.stock2holdings += qty;
-            pair.position -= qty;
+            orders[pair.index1].quantity += qty;
+            orders[pair.index2].quantity -= qty;
+            pair.stock1holdings += qty;
+            pair.stock2holdings -= qty;
+            pair.position += qty;
+            log("shorting " + qty + " making total = " + pair.position);
         }
         else if (position == "long"){
             orders[pair.index1].quantity += qty;
@@ -272,7 +272,10 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
             pair.stock1holdings += qty;
             pair.stock2holdings -= qty;
             pair.position += qty;
+            log("buyinh " + qty + " making total = " + pair.position);
         }
+        log("" + pair.index1 + " has qty " + orders[pair.index1].quantity);
+        log("" + pair.index2 + " has qty " + orders[pair.index2].quantity);
     }
 
     private boolean goLong(StockPair pair){
@@ -329,7 +332,7 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
         //log("tick " + tick + "price1 " + pair.price1 + "price2 " + pair.price2);
         pair.spread[tick] = pair.price1 - pair.price2;
         pair.slow_mavg[tick] = movingAverage(pair, slow_mavg_window);
-        pair.fast_mavg[tick] = movingAverage(pair, fast_mavg_window);
+        pair.fast_mavg[tick] = expMovingAverage(pair);
         pair.momentum_mavg[tick] = momentumMovingAverage(pair);
         pair.diff = pair.spread[tick] - pair.slow_mavg[tick];
         pair.std[tick] = standardDev(pair); // check the std function
@@ -359,25 +362,11 @@ public class PairsCase extends AbstractPairsCase implements PairsInterface {
     }   
 
     private double momentumMovingAverage(StockPair pair){
-        ArrayList<Double> deltas = new ArrayList<Double>();
-        int offset = 0;
-        if(tick >= momentum_mavg_window){
-            offset = tick - momentum_mavg_window;
+        if(tick == 0) {
+            return 0;
+        } else {
+            return pair.fast_mavg[tick] - pair.fast_mavg[tick - 1];
         }
-        for(int i = offset; i < tick ; i++){
-            //log("spread t " + pair.spread[i+1]);
-            //log("spread t-1" + pair.spread[i]);
-            double delta = pair.spread[i+1]-pair.spread[i];
-            //log("delta " + delta);
-            deltas.add(delta);
-        }
-        double cum_sum = 0;
-        for(int i = 0; i < deltas.size(); i++){
-            cum_sum += deltas.get(i);
-        }
-        //log("momentum_mavg: " + cum_sum/deltas.size());
-        //log("cum_sum " + cum_sum + "size " + deltas.size());
-        return cum_sum / deltas.size();
     }
 
     private double standardDev(StockPair pair){
