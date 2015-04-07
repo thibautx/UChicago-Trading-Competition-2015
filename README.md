@@ -1,6 +1,12 @@
-# UChicago Trading Competition Quickstart
-# Getting Started
+University of Chicago Midwest Trading Competition 2015
+University of Illinois - Urbana-Champaign Team 1 Submission (Thibaut Xiong, Gregory Pastorek, Tyler Buentig, Evan Fabry)
 
-A quickstart workspace is supplied for competitors to clone when they begin developing their strategies. This repo includes a sample implementation of each case (under /src) and sample workspaces for the Eclipse (.project) and IntelliJ (.idea) IDEs.
+This repository contains all the files we worked on relating to the competition. From research tools in python to the competition OptionsCity Java implementation. Write-up to come...
 
-The contents of this repository are identical to the .zip file in the Dropbox folder provided. Therefore, if you are not comfortable with git, the same code is available through Dropbox.
+Included: 
+Case 1 - Options Case
+Case 2 - Pairs Trading Case
+Case 3 - Index Tracking Cas
+
+
+This code is provided under the MIT license. Copyright (c) 2015 Thibaut Xiong, Gregory Pastorek
