@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.linalg as npla
-from statsmodels.tsa.stattools import adfuller
+#from statsmodels.tsa.stattools import adfuller
 
 #global pnl, entry_spread, curr_spread, stock_spread, pos_multiple, pos_limit
 global pos_limit, pos_multiple, stock_spread, weights
