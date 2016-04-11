@@ -1,7 +1,7 @@
 University of Chicago Midwest Trading Competition 2015
 University of Illinois - Urbana-Champaign Team 1 Submission (Thibaut Xiong, Gregory Pastorek, Ty Buenting, Evan Fabry)
 
-This repository contains all the files we worked on relating to the competition. From research tools in python to the competition OptionsCity Java implementation. Write-up to come...
+This repository contains all the files we worked on relating to the competition. 
 
 Included: 
 Case 1 - Options Case
